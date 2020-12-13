@@ -21,8 +21,7 @@ type Config struct {
 	Args           []string
 }
 
-// todo: output should be protected data
-func Run(config *Config) error {
+func Start(config *Config) (*exec.Cmd, error) {
 	cmd := exec.Command("/proc/self/exe", config.Args...)
 	cmd.Stdin = config.Stdin
 	cmd.Stdout = config.Stdout
@@ -42,7 +41,15 @@ func Run(config *Config) error {
 			{ContainerID: 0, HostID: os.Getgid(), Size: 1},
 		},
 	}
-	return cmd.Run()
+	return cmd, cmd.Start()
+}
+
+func Run(config *Config) (*exec.Cmd, error) {
+	cmd, err := Start(config)
+	if err != nil {
+		return cmd, err
+	}
+	return cmd, cmd.Wait()
 }
 
 func RunChild() error {

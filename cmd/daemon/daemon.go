@@ -10,11 +10,18 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/exec"
+	"sync"
 )
 
 type server struct {
 	api.UnimplementedApiServer
 }
+
+var (
+	currentlyRunning = make(map[uuid.UUID]*exec.Cmd)
+	mutex            sync.Mutex
+)
 
 func (s *server) Run(ctx context.Context, request *api.ContainerRequest) (*api.ContainerResponse, error) {
 	id := uuid.New()
@@ -42,15 +49,28 @@ func (s *server) Run(ctx context.Context, request *api.ContainerRequest) (*api.C
 			}
 			cont.RemovePipes(pipePath)
 		}()
-		if err = container.Run(&container.Config{
+		cmd, err := container.Start(&container.Config{
 			Stdin:    pipes[0],
 			Stdout:   pipes[1],
 			Stderr:   pipes[2],
 			Hostname: request.Hostname,
 			Workdir:  request.Workdir,
 			Args:     request.Args,
-		}); err != nil {
-			log.Printf("container run error: %v\n", err)
+		})
+		if err != nil {
+			log.Printf("container start error: %v\n", err)
+			return
+		}
+		mutex.Lock()
+		currentlyRunning[id] = cmd
+		mutex.Unlock()
+		defer func() {
+			mutex.Lock()
+			defer mutex.Unlock()
+			delete(currentlyRunning, id)
+		}()
+		if err = cmd.Wait(); err != nil {
+			log.Printf("container error: %v\n", err)
 			return
 		}
 		log.Printf("container %s done\n", id.String())
