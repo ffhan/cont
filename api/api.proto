@@ -1,0 +1,31 @@
+syntax = 'proto3';
+
+package api;
+
+option go_package = "cont/api";
+
+message ContainerRequest {
+  string name = 1;
+  string hostname = 2;
+  string workdir = 3;
+  string cmd = 4;
+  repeated string args = 8;
+}
+
+message ContainerResponse {
+  bytes uuid = 1;
+}
+
+message ContainerMessage {
+  bytes data = 1;
+  int32 type = 2;
+  int32 status = 3;
+}
+
+service Api {
+  rpc Run(ContainerRequest) returns (ContainerResponse) {};
+}
+
+service ContainerStreamer {
+  rpc Communicate(stream ContainerMessage) returns (stream ContainerMessage) {};
+}
