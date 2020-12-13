@@ -34,7 +34,7 @@ Daemon: `go run cmd/daemon/daemon.go`
 * [ ] running different OSes
 * [ ] volume mounts
 * [ ] contfiles & builds
-* [ ] killing containers through CLI
+* [x] killing containers through CLI (almost!)
 * [ ] secure gRPC communication
 
 ## Examples
