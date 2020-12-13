@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="kill active processes">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="event stream">
+      <change afterPath="$PROJECT_DIR$/assets/cont.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/cont.mp4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/api.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/api.proto" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/api_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/api_grpc.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/run.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/socket_test/client/sockets.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/socket_test/common.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/socket_test/server/sockets.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +53,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/assets" />
       <recent name="$PROJECT_DIR$/cmd/socket_test/server" />
       <recent name="$PROJECT_DIR$/cmd/cli" />
       <recent name="$PROJECT_DIR$/container" />
@@ -112,6 +107,15 @@
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
@@ -120,7 +124,8 @@
     <MESSAGE value="currently running data" />
     <MESSAGE value="ps active processes" />
     <MESSAGE value="kill active processes" />
-    <option name="LAST_COMMIT_MESSAGE" value="kill active processes" />
+    <MESSAGE value="event stream" />
+    <option name="LAST_COMMIT_MESSAGE" value="event stream" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

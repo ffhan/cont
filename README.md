@@ -13,6 +13,8 @@ Currently supports:
 
 ## Usage
 
+![cont basic demo](assets/cont.gif)
+
 Check out help with `go run cmd/cli/cli.go help`.
 
 * `go run cmd/cli/cli.go run --it bash` - run bash in an isolated container with connected stdin
