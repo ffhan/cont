@@ -26,11 +26,11 @@ var psCmd = &cobra.Command{
 
 func printProcesses(processes *api.ActiveProcesses) error {
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"UUID", "CMD", "PID"})
+	table.SetHeader([]string{"UUID", "CMD", "PID", "NAME"})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	for _, proc := range processes.Processes {
-		table.Append([]string{proc.Id, proc.Cmd, fmt.Sprint(proc.Pid)})
+		table.Append([]string{proc.Id, proc.Cmd, fmt.Sprint(proc.Pid), proc.Name})
 	}
 	table.Render()
 	return nil

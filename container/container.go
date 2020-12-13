@@ -18,11 +18,12 @@ type Config struct {
 	Stdout, Stderr io.Writer
 	Hostname       string
 	Workdir        string
+	Cmd            string
 	Args           []string
 }
 
 func Start(config *Config) (*exec.Cmd, error) {
-	cmd := exec.Command("/proc/self/exe", config.Args...)
+	cmd := exec.Command("/proc/self/exe", append([]string{config.Cmd}, config.Args...)...)
 	cmd.Stdin = config.Stdin
 	cmd.Stdout = config.Stdout
 	cmd.Stderr = config.Stderr

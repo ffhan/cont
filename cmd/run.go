@@ -21,12 +21,22 @@ var runCmd = &cobra.Command{
 		must(err)
 		defer conn.Close()
 
+		hostname, err := cmd.Flags().GetString("hostname")
+		must(err)
+
+		workdir, err := cmd.Flags().GetString("workdir")
+		must(err)
+
+		name, err := cmd.Flags().GetString("name")
+		must(err)
+
 		client := api.NewApiClient(conn)
 		response, err := client.Run(context.Background(), &api.ContainerRequest{
-			Name:     "test",
-			Hostname: "cont",
-			Workdir:  "/home/fhancic",
-			Args:     args,
+			Name:     name,
+			Hostname: hostname,
+			Workdir:  workdir,
+			Cmd:      args[0],
+			Args:     args[1:],
 		})
 		must(err)
 
@@ -84,7 +94,20 @@ func must(err error) {
 
 func init() {
 	rootCmd.AddCommand(runCmd)
-	// todo: args, params and flags for run
+
+	hostname, err := os.Hostname()
+	if err != nil {
+		hostname = "cont"
+	}
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		homeDir = "/"
+	}
+
 	runCmd.Flags().Bool("it", false, "determines whether to connect stdin with container stdin")
 	runCmd.Flags().BoolP("detached", "d", false, "run in detached mode")
+	runCmd.Flags().String("hostname", hostname, "sets container hostname")
+	runCmd.Flags().String("workdir", homeDir, "sets container workdir")
+	runCmd.Flags().String("name", "", "sets container name")
 }

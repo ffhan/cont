@@ -22,14 +22,20 @@ message Empty {
 message Process {
   string id = 1;
   string cmd = 2;
-  int64 pid = 3;
+  string name = 3;
+  int64 pid = 4;
 }
 
 message ActiveProcesses {
   repeated Process processes = 1;
 }
 
+message KillCommand {
+  bytes id = 1;
+}
+
 service Api {
   rpc Run(ContainerRequest) returns (ContainerResponse) {};
   rpc Ps(Empty) returns (ActiveProcesses) {};
+  rpc Kill(KillCommand) returns (ContainerResponse) {};
 }
