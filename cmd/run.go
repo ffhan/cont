@@ -47,15 +47,27 @@ var runCmd = &cobra.Command{
 			os.Exit(0)
 		}()
 
-		go io.Copy(os.Stdout, pipes[1]) // todo: only if not in detached mode
-		go io.Copy(os.Stderr, pipes[2]) // todo: only if not in detached mode
-		scanner := bufio.NewScanner(os.Stdin)
-		for scanner.Scan() {
-			line := scanner.Text() + "\n"
-			_, err := pipes[0].WriteString(line)
-			must(err)
+		if isDetached, err := cmd.Flags().GetBool("detached"); err == nil && !isDetached {
+			go io.Copy(os.Stdout, pipes[1])
+			go io.Copy(os.Stderr, pipes[2])
+		} else if err != nil {
+			panic(err)
+		}
+		if isInteractive, err := cmd.Flags().GetBool("it"); err == nil && isInteractive {
+			handleStdin(pipes[0])
+		} else if err != nil {
+			panic(err)
 		}
 	},
+}
+
+func handleStdin(stdinPipe *os.File) {
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		line := scanner.Text() + "\n"
+		_, err := stdinPipe.WriteString(line)
+		must(err)
+	}
 }
 
 func closePipes(pipes [3]*os.File) {
@@ -74,4 +86,6 @@ func must(err error) {
 func init() {
 	rootCmd.AddCommand(runCmd)
 	// todo: args, params and flags for run
+	runCmd.Flags().Bool("it", false, "determines whether to connect stdin with container stdin")
+	runCmd.Flags().BoolP("detached", "d", false, "run in detached mode")
 }
