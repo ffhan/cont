@@ -5,6 +5,7 @@ import (
 	"cont/api"
 	"cont/container"
 	context "context"
+	"fmt"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"log"
@@ -61,6 +62,7 @@ func (s *server) Run(ctx context.Context, request *api.ContainerRequest) (*api.C
 			log.Printf("container start error: %v\n", err)
 			return
 		}
+		fmt.Printf("container %s started\n", id.String())
 		mutex.Lock()
 		currentlyRunning[id] = cmd
 		mutex.Unlock()
@@ -76,6 +78,19 @@ func (s *server) Run(ctx context.Context, request *api.ContainerRequest) (*api.C
 		log.Printf("container %s done\n", id.String())
 	}()
 	return &api.ContainerResponse{Uuid: idBytes}, nil
+}
+
+func (s *server) Ps(ctx context.Context, empty *api.Empty) (*api.ActiveProcesses, error) {
+	processes := make([]*api.Process, 0, len(currentlyRunning))
+	for id, cmd := range currentlyRunning {
+		processes = append(processes, &api.Process{
+			Id:  id.String(),
+			Cmd: cmd.Args[0],
+			Pid: int64(cmd.Process.Pid),
+		})
+	}
+	result := &api.ActiveProcesses{Processes: processes}
+	return result, nil
 }
 
 func main() {

@@ -13,6 +13,10 @@ var (
 	}
 )
 
+func init() {
+	rootCmd.Flags().String("host", ":9000", "defines the cont host to connect to")
+}
+
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)

@@ -7,7 +7,6 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
-	"google.golang.org/grpc"
 	"io"
 	"os"
 	"os/signal"
@@ -18,7 +17,7 @@ var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "run a container",
 	Run: func(cmd *cobra.Command, args []string) {
-		conn, err := grpc.Dial(":9000", grpc.WithInsecure())
+		conn, err := GrpcDial()
 		must(err)
 		defer conn.Close()
 
