@@ -5,11 +5,14 @@ import (
 	"cont"
 	"cont/api"
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	"io"
+	"log"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 )
 
@@ -56,17 +59,54 @@ var runCmd = &cobra.Command{
 			os.Exit(0)
 		}()
 
+		go func() {
+			events, err := client.Events(context.Background(), &api.EventStreamRequest{Id: response.Uuid})
+			if err != nil {
+				signals <- syscall.SIGTERM
+				return
+			}
+			for {
+				event, err := events.Recv()
+				if err != nil {
+					log.Println(err)
+					signals <- syscall.SIGTERM
+					break
+				}
+				if event.Type == Killed {
+					fmt.Println("container has been killed")
+				}
+				if event.Type == Done || event.Type == Killed {
+					signals <- syscall.SIGTERM
+					return
+				}
+			}
+		}()
+
+		var wg sync.WaitGroup
+
 		if isDetached, err := cmd.Flags().GetBool("detached"); err == nil && !isDetached {
-			go io.Copy(os.Stdout, pipes[1])
-			go io.Copy(os.Stderr, pipes[2])
+			wg.Add(2)
+			go func() {
+				io.Copy(os.Stdout, pipes[1])
+				wg.Done()
+			}()
+			go func() {
+				io.Copy(os.Stderr, pipes[2])
+				wg.Done()
+			}()
 		} else if err != nil {
 			panic(err)
 		}
 		if isInteractive, err := cmd.Flags().GetBool("it"); err == nil && isInteractive {
-			handleStdin(pipes[0])
+			wg.Add(1)
+			go func() {
+				handleStdin(pipes[0])
+				wg.Done()
+			}()
 		} else if err != nil {
 			panic(err)
 		}
+		wg.Wait()
 	},
 }
 

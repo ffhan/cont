@@ -3,6 +3,7 @@ package main
 import (
 	"cont"
 	"cont/api"
+	"cont/cmd"
 	"cont/container"
 	context "context"
 	"errors"
@@ -16,11 +17,8 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 )
-
-type server struct {
-	api.UnimplementedApiServer
-}
 
 type Container struct {
 	Cmd     *exec.Cmd
@@ -29,8 +27,13 @@ type Container struct {
 	Command string
 }
 
+type server struct {
+	api.UnimplementedApiServer
+}
+
 var (
 	currentlyRunning = make(map[uuid.UUID]Container)
+	events           = make(map[uuid.UUID]chan *api.Event)
 	mutex            sync.Mutex
 )
 
@@ -62,9 +65,35 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 		for _, pipe := range pipes {
 			pipe.Close()
 		}
-		cont.RemovePipes(pipePath)
+		if err := cont.RemovePipes(pipePath); err != nil {
+			log.Println(err)
+		}
 	}()
-	cmd, err := container.Start(&container.Config{
+	eventChan := make(chan *api.Event)
+	events[id] = eventChan
+
+	binaryId, err := id.MarshalBinary()
+	if err != nil {
+		log.Println(err)
+		eventChan <- &api.Event{
+			Id:      nil,
+			Type:    cmd.Failed,
+			Message: id.String(),
+			Source:  "",
+			Data:    nil,
+		}
+		return
+	}
+
+	eventChan <- &api.Event{
+		Id:      binaryId,
+		Type:    cmd.Created,
+		Message: "",
+		Source:  "", // todo: fill source
+		Data:    nil,
+	}
+
+	containerCommand, err := container.Start(&container.Config{
 		Stdin:    pipes[0],
 		Stdout:   pipes[1],
 		Stderr:   pipes[2],
@@ -77,25 +106,42 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 		log.Printf("container start error: %v\n", err)
 		return
 	}
+	eventChan <- &api.Event{
+		Id:      binaryId,
+		Type:    cmd.Started,
+		Message: "",
+		Source:  "", // todo: fill source
+		Data:    nil,
+	}
 	fmt.Printf("container %s started\n", id.String())
 	mutex.Lock()
 
 	currentlyRunning[id] = Container{
-		Cmd:     cmd,
+		Cmd:     containerCommand,
 		Name:    request.Name,
 		Id:      id,
 		Command: strings.Join(append([]string{request.Cmd}, request.Args...), " "),
 	}
 	mutex.Unlock()
+
 	defer func() {
 		mutex.Lock()
 		defer mutex.Unlock()
 		delete(currentlyRunning, id)
 	}()
-	if err = cmd.Wait(); err != nil {
+	if err = containerCommand.Wait(); err != nil {
 		log.Printf("container error: %v\n", err)
 		return
 	}
+	eventChan <- &api.Event{
+		Id:      binaryId,
+		Type:    cmd.Done,
+		Message: "",
+		Source:  "", // todo: fill source
+		Data:    nil,
+	}
+	close(eventChan)
+	delete(events, id)
 	log.Printf("container %s done\n", id.String())
 }
 
@@ -108,14 +154,27 @@ func (s *server) Kill(ctx context.Context, killCommand *api.KillCommand) (*api.C
 	if !ok {
 		return nil, errors.New("container doesn't exist")
 	}
+
+	eventChan, ok := events[id]
+	if !ok {
+		return nil, errors.New("cannot find container events")
+	}
+
 	if err = c.Cmd.Process.Signal(syscall.SIGTERM); err != nil { // todo: stdin WriteCloser so that interactive clients see the kill
 		return nil, err
 	}
-	idBytes, err := id.MarshalBinary()
-	if err != nil {
-		return nil, err
+
+	eventChan <- &api.Event{
+		Id:      killCommand.Id,
+		Type:    cmd.Killed,
+		Message: "",
+		Source:  "",
+		Data:    nil,
 	}
-	return &api.ContainerResponse{Uuid: idBytes}, nil
+	close(eventChan)
+	delete(events, id)
+
+	return &api.ContainerResponse{Uuid: killCommand.Id}, nil
 }
 
 func (s *server) Ps(ctx context.Context, empty *api.Empty) (*api.ActiveProcesses, error) {
@@ -130,6 +189,33 @@ func (s *server) Ps(ctx context.Context, empty *api.Empty) (*api.ActiveProcesses
 	}
 	result := &api.ActiveProcesses{Processes: processes}
 	return result, nil
+}
+
+func (s *server) Events(request *api.EventStreamRequest, eventsServer api.Api_EventsServer) error {
+	id, err := uuid.FromBytes(request.Id)
+	if err != nil {
+		return err
+	}
+	eventChan, ok := events[id] // retry finding events
+	found := false
+	for i := 0; i < 100; i++ {
+		if !ok {
+			time.Sleep(10 * time.Millisecond)
+			eventChan, ok = events[id]
+			continue
+		}
+		found = true
+		break
+	}
+	if !found {
+		return errors.New("couldn't fetch events")
+	}
+	for event := range eventChan {
+		if err := eventsServer.Send(event); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func main() {

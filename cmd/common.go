@@ -9,3 +9,11 @@ func GrpcDial() (*grpc.ClientConn, error) {
 	}
 	return grpc.Dial(target, grpc.WithInsecure())
 }
+
+const (
+	Failed int32 = iota
+	Created
+	Started
+	Done
+	Killed // todo: make a distinction between done and killed
+)
