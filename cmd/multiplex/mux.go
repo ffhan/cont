@@ -82,7 +82,7 @@ func (m *mux) readIncoming() {
 			p := results[i]
 			//fmt.Println(m.Name, p.Id, string(p.Data))
 
-			stream, ok := m.streams[p.Id]
+			stream, ok := m.streams[p.Id] // this assumes 1:1 multiplexing, we'd like M:N (just store an array of streams)
 			if !ok {
 				log.Printf("no stream with id %d\n", p.Id)
 				break

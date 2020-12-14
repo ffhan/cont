@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="usage gif">
-      <change afterPath="$PROJECT_DIR$/cmd/multiplex/cmd/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/multiplex/mux.go" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="multiplexing a tcp connection POC">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/api.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/api.proto" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/multiplex/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/mux.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -141,7 +139,8 @@
     <MESSAGE value="kill active processes" />
     <MESSAGE value="event stream" />
     <MESSAGE value="usage gif" />
-    <option name="LAST_COMMIT_MESSAGE" value="usage gif" />
+    <MESSAGE value="multiplexing a tcp connection POC" />
+    <option name="LAST_COMMIT_MESSAGE" value="multiplexing a tcp connection POC" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

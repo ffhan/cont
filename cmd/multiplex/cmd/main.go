@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"cont/cmd/multiplex"
 	"fmt"
-	"io"
+	"log"
 	"net"
-	"os"
 	"time"
 )
 
@@ -24,7 +24,10 @@ func client() {
 		if _, err := fmt.Fprintln(s1, "hello from session 1!"); err != nil {
 			panic(err)
 		}
-		io.Copy(os.Stdout, s1)
+		scanner := bufio.NewScanner(s1)
+		for scanner.Scan() {
+			log.Printf("%s:%d -> %s\n", mux.Name, 1, scanner.Text())
+		}
 	}()
 
 	go func() {
@@ -32,7 +35,10 @@ func client() {
 		if _, err := fmt.Fprintln(s2, "hello from session 2!"); err != nil {
 			panic(err)
 		}
-		io.Copy(os.Stdout, s2)
+		scanner := bufio.NewScanner(s2)
+		for scanner.Scan() {
+			log.Printf("%s:%d -> %s\n", mux.Name, 2, scanner.Text())
+		}
 	}()
 }
 
@@ -71,7 +77,10 @@ func main() {
 				if _, err := fmt.Fprintln(process1, "example of process 1 writing... again!"); err != nil {
 					panic(err)
 				}
-				io.Copy(os.Stdout, process1)
+				scanner := bufio.NewScanner(process1)
+				for scanner.Scan() {
+					log.Printf("%s:%d -> %s\n", mux.Name, 1, scanner.Text())
+				}
 			}()
 			go func() {
 				if _, err := fmt.Fprintln(process2, "example of process 2 writing"); err != nil {
@@ -80,7 +89,10 @@ func main() {
 				if _, err := fmt.Fprintln(process2, "example of process 2 writing... again!"); err != nil {
 					panic(err)
 				}
-				io.Copy(os.Stdout, process2)
+				scanner := bufio.NewScanner(process2)
+				for scanner.Scan() {
+					log.Printf("%s:%d -> %s\n", mux.Name, 2, scanner.Text())
+				}
 			}()
 		}()
 	}
