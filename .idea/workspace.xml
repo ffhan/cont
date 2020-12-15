@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="multiplexing a tcp connection POC">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="cleaned up main">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/multiplex/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/cmd/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/mux.go" afterDir="false" />
@@ -140,7 +140,8 @@
     <MESSAGE value="event stream" />
     <MESSAGE value="usage gif" />
     <MESSAGE value="multiplexing a tcp connection POC" />
-    <option name="LAST_COMMIT_MESSAGE" value="multiplexing a tcp connection POC" />
+    <MESSAGE value="cleaned up main" />
+    <option name="LAST_COMMIT_MESSAGE" value="cleaned up main" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -155,7 +156,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/multiplex/mux.go</url>
-          <line>89</line>
+          <line>95</line>
           <option name="timeStamp" value="24" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
@@ -165,12 +166,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/multiplex/mux.go</url>
-          <line>18</line>
+          <line>19</line>
           <option name="timeStamp" value="27" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/multiplex/mux.go</url>
-          <line>51</line>
+          <line>53</line>
           <option name="timeStamp" value="30" />
         </line-breakpoint>
       </breakpoints>

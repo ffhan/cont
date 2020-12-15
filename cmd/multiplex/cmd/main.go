@@ -31,6 +31,17 @@ func client() {
 	}()
 
 	go func() {
+		s22 := mux.NewSession(2)
+		if _, err := fmt.Fprintln(s22, "hello from session 2 - copy!"); err != nil {
+			panic(err)
+		}
+		scanner := bufio.NewScanner(s22)
+		for scanner.Scan() {
+			log.Printf("%s:%d -> %s\n", mux.Name, 22, scanner.Text())
+		}
+	}()
+
+	go func() {
 		s2 := mux.NewSession(2)
 		if _, err := fmt.Fprintln(s2, "hello from session 2!"); err != nil {
 			panic(err)
