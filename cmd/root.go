@@ -13,8 +13,14 @@ var (
 	}
 )
 
+const (
+	ApiPort       = ":9000"
+	StreamingPort = ":9001"
+	Localhost     = "localhost"
+)
+
 func init() {
-	rootCmd.Flags().String("host", ":9000", "defines the cont host to connect to")
+	rootCmd.PersistentFlags().String("host", Localhost, "defines the cont host to connect to")
 }
 
 func Execute() {

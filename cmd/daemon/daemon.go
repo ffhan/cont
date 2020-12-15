@@ -5,7 +5,9 @@ import (
 	"cont/api"
 	"cont/cmd"
 	"cont/container"
+	"cont/multiplex"
 	context "context"
+	"encoding/gob"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
@@ -21,18 +23,109 @@ import (
 )
 
 type Container struct {
-	Cmd     *exec.Cmd
-	Name    string
-	Id      uuid.UUID
-	Command string
+	Cmd            *exec.Cmd
+	Name           string
+	Id             uuid.UUID
+	Command        string
+	Stdin          *dynamicReader
+	Stdout, Stderr *dynamicWriter
 }
 
 type server struct {
 	api.UnimplementedApiServer
+	muxClient        *multiplex.Client
+	connections      map[uuid.UUID]*streamConn
+	connectionsMutex sync.RWMutex
+}
+
+type streamConn struct {
+	net.Conn
+	mux *multiplex.Mux
+}
+
+func NewServer(muxClient *multiplex.Client, connectionListener net.Listener) (*server, error) {
+	if muxClient == nil {
+		return nil, errors.New("muxClient is nil")
+	}
+	if connectionListener == nil {
+		return nil, errors.New("connectionListener is nil")
+	}
+	s := &server{muxClient: muxClient, connections: make(map[uuid.UUID]*streamConn)}
+	go s.acceptStreamConnections(connectionListener)
+	return s, nil
+}
+
+func (s *server) acceptStreamConnections(listener net.Listener) {
+	for {
+		accept, err := listener.Accept()
+		if err != nil {
+			log.Printf("cannot accept a connection: %v", err)
+			return
+		}
+		defer accept.Close()
+		clientID := uuid.UUID{}
+		if err = gob.NewDecoder(accept).Decode(&clientID); err != nil {
+			log.Printf("cannot decode a client ID: %v", err)
+			return
+		}
+		s.connectionsMutex.Lock()
+		s.connections[clientID] = &streamConn{
+			Conn: accept,
+			mux:  s.muxClient.NewMux(accept),
+		}
+		s.connectionsMutex.Unlock()
+	}
+}
+
+func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
+	for {
+		recv, err := streamServer.Recv()
+		if err != nil {
+			return err
+		}
+		clientID, err := uuid.FromBytes(recv.ClientId)
+		if err != nil {
+			return err
+		}
+
+		s.connectionsMutex.RLock()
+		conn, ok := s.connections[clientID]
+		s.connectionsMutex.RUnlock()
+		if !ok {
+			return fmt.Errorf("no connection for the client ID %s", clientID.String())
+		}
+
+		containerId, err := uuid.FromBytes(recv.Id)
+		if err != nil {
+			return err
+		}
+
+		mutex.Lock()
+		cont, ok := currentlyRunning[containerId]
+		if !ok {
+			return fmt.Errorf("no currently running container %s", containerId.String())
+		}
+		mutex.Unlock()
+
+		cIDString := containerId.String()
+		stdinId := cIDString + "-0"
+		stdinOut := cIDString + "-1"
+		stdinErr := cIDString + "-2"
+
+		// create streams
+		inStream := conn.mux.NewStream(stdinId)
+		outStream := conn.mux.NewStream(stdinOut)
+		errStream := conn.mux.NewStream(stdinErr)
+
+		// todo: what about removing streams?
+		cont.Stdin.AddReader(inStream)
+		cont.Stdout.AddWriter(outStream)
+		cont.Stderr.AddWriter(errStream)
+	}
 }
 
 var (
-	currentlyRunning = make(map[uuid.UUID]Container)
+	currentlyRunning = make(map[uuid.UUID]Container) // todo: transfer to a server struct
 	events           = make(map[uuid.UUID]chan *api.Event)
 	mutex            sync.Mutex
 )
@@ -93,10 +186,21 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 		Data:    nil,
 	}
 
+	stdin := NewDynamicReader()
+	stdin.AddReader(pipes[0])
+	stdout := NewDynamicWriter()
+	stdout.AddWriter(pipes[1])
+	stderr := NewDynamicWriter()
+	stderr.AddWriter(pipes[2])
+
+	defer stderr.Close()
+	defer stdout.Close()
+	defer stdin.Close()
+
 	containerCommand, err := container.Start(&container.Config{
-		Stdin:    pipes[0],
-		Stdout:   pipes[1],
-		Stderr:   pipes[2],
+		Stdin:    stdin,
+		Stdout:   stdout,
+		Stderr:   stderr,
 		Hostname: request.Hostname,
 		Workdir:  request.Workdir,
 		Cmd:      request.Cmd,
@@ -121,6 +225,9 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 		Name:    request.Name,
 		Id:      id,
 		Command: strings.Join(append([]string{request.Cmd}, request.Args...), " "),
+		Stdin:   stdin,
+		Stdout:  stdout,
+		Stderr:  stderr,
 	}
 	mutex.Unlock()
 
@@ -133,6 +240,7 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 		log.Printf("container error: %v\n", err)
 		return
 	}
+	fmt.Println("sending done event")
 	eventChan <- &api.Event{
 		Id:      binaryId,
 		Type:    cmd.Done,
@@ -223,12 +331,20 @@ func main() {
 		must(container.RunChild())
 		return
 	}
-	listen, err := net.Listen("tcp", ":9000")
+	listen, err := net.Listen("tcp", cmd.ApiPort)
 	must(err)
 	defer listen.Close()
 
+	streamListener, err := net.Listen("tcp", cmd.StreamingPort)
+	must(err)
+
+	muxClient := multiplex.NewClient()
+
+	daemonServer, err := NewServer(muxClient, streamListener)
+	must(err)
+
 	s := grpc.NewServer()
-	api.RegisterApiServer(s, &server{})
+	api.RegisterApiServer(s, daemonServer)
 	must(s.Serve(listen))
 }
 

@@ -7,7 +7,7 @@ func GrpcDial() (*grpc.ClientConn, error) {
 	if err != nil {
 		return nil, err
 	}
-	return grpc.Dial(target, grpc.WithInsecure())
+	return grpc.Dial(target+ApiPort, grpc.WithInsecure())
 }
 
 const (

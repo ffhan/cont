@@ -9,22 +9,26 @@ import (
 	"sync"
 )
 
-// mux multiplexes a connection to a number of streams.
-// Every mux handles only one connection.
-type mux struct {
-	ownedStreams map[*stream]bool
+// Mux multiplexes a connection to a number of streams.
+// Every Mux handles only one connection.
+type Mux struct {
+	ownedStreams map[*Stream]bool
 	streamMutex  sync.RWMutex
-	client       *client
+	client       *Client
 	Name         string
 	conn         io.ReadWriteCloser
 }
 
-func (m *mux) logf(format string, args ...interface{}) {
+func (m *Mux) GetOwnedStreams() map[*Stream]bool {
+	return m.ownedStreams
+}
+
+func (m *Mux) logf(format string, args ...interface{}) {
 	m.client.logf("%s: "+format, append([]interface{}{m.Name}, args...)...)
 }
 
 // read incoming data from a connection and pass it to appropriate streams
-func (m *mux) readIncoming() {
+func (m *Mux) readIncoming() {
 	buffer := make([]byte, 2048) // todo: is 2k memory enough?
 	for {
 		read, err := m.conn.Read(buffer)
@@ -38,7 +42,7 @@ func (m *mux) readIncoming() {
 		}
 		p := api.Packet{}
 		results := make([]struct {
-			Id   int32
+			Id   string
 			Data []byte
 		}, 0, 32)
 		for len(data) > 0 {
@@ -52,7 +56,7 @@ func (m *mux) readIncoming() {
 			data = data[:len(data)-size]
 
 			results = append(results, struct {
-				Id   int32
+				Id   string
 				Data []byte
 			}{Id: p.Id, Data: p.Data}) // add a packet to results
 		}
@@ -62,9 +66,9 @@ func (m *mux) readIncoming() {
 
 			for _, stream := range m.client.getStreams(p.Id) {
 				if _, err := stream.input.Write(p.Data); err != nil {
-					log.Printf("cannot write to stream input: %v\n", err)
-					if err := m.closeStream(stream); err != nil { // close the stream if write unsuccessful
-						m.logf("cannot close a stream %d: %v", stream.id, err)
+					log.Printf("cannot write to Stream input: %v\n", err)
+					if err := m.closeStream(stream); err != nil { // close the Stream if write unsuccessful
+						m.logf("cannot close a Stream %s: %v", stream.id, err)
 					}
 					break
 				}
@@ -73,11 +77,11 @@ func (m *mux) readIncoming() {
 	}
 }
 
-// Creates a new stream for the connection.
-// All incoming packets for the id will be passed to this stream.
-func (m *mux) NewStream(id int32) *stream {
-	//m.logf("created a new stream %d", id)
-	str := &stream{
+// Creates a new Stream for the connection.
+// All incoming packets for the id will be passed to this Stream.
+func (m *Mux) NewStream(id string) *Stream {
+	//m.logf("created a new Stream %s", id)
+	str := &Stream{
 		client: m,
 		id:     id,
 		output: m.conn,
@@ -90,22 +94,22 @@ func (m *mux) NewStream(id int32) *stream {
 	return str
 }
 
-// Removes the stream from the mux, but doesn't close it. It also doesn't remove it from the client.
-func (m *mux) removeStream(stream *stream) {
+// Removes the Stream from the Mux, but doesn't close it. It also doesn't remove it from the Client.
+func (m *Mux) removeStream(stream *Stream) {
 	m.streamMutex.Lock()
 	defer m.streamMutex.Unlock()
 	delete(m.ownedStreams, stream)
 }
 
-// Closes a stream and removes it from the client and the mux.
-func (m *mux) closeStream(s *stream) error {
+// Closes a Stream and removes it from the Client and the Mux.
+func (m *Mux) closeStream(s *Stream) error {
 	m.removeStream(s)
 	m.client.removeStream(s.id, s)
 	return s.input.Close()
 }
 
-// Closes a mux and the streams it owns.
-func (m *mux) Close() error {
+// Closes a Mux and the streams it owns.
+func (m *Mux) Close() error {
 	m.streamMutex.RLock()
 	defer m.streamMutex.RUnlock()
 	var resultErr error

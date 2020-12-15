@@ -5,8 +5,19 @@ package api;
 option go_package = "cont/api";
 
 message Packet {
-  int32 id = 1;
+  string id = 1;
   bytes data = 2;
+}
+
+message StreamRequest {
+  bytes id = 1; // container ID
+  bytes clientId = 2; // client ID
+}
+
+message StreamResponse {
+  string inId = 1; // stream stdin ID
+  string outId = 2; // stream stdout ID
+  string errId = 3; // stream stderr ID
 }
 
 message ContainerRequest {
@@ -52,8 +63,9 @@ message Event {
 }
 
 service Api {
-  rpc Run(ContainerRequest) returns (ContainerResponse) {};
-  rpc Ps(Empty) returns (ActiveProcesses) {};
-  rpc Kill(KillCommand) returns (ContainerResponse) {};
-  rpc Events(EventStreamRequest) returns (stream Event) {};
+  rpc Run(ContainerRequest) returns (ContainerResponse);
+  rpc Ps(Empty) returns (ActiveProcesses);
+  rpc Kill(KillCommand) returns (ContainerResponse);
+  rpc Events(EventStreamRequest) returns (stream Event);
+  rpc RequestStream(stream StreamRequest) returns (stream StreamResponse);
 }

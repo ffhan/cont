@@ -4,9 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="multiplex package basic implementation">
-      <change beforePath="$PROJECT_DIR$/cmd/multiplex/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/multiplex/mux.go" beforeDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="cmd multiplex">
+      <change afterPath="$PROJECT_DIR$/cmd/daemon/process_pipe.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/daemon/process_pipe_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api.proto" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/api_grpc.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/multiplex/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/root.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/root.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/stream.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +77,7 @@
       <recent name="$PROJECT_DIR$/container" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Build.go build cont/cmd/multiplex">
+  <component name="RunManager" selected="Go Build.go build cont/cmd/daemon">
     <configuration name="go build cont" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="cont" />
       <working_directory value="$PROJECT_DIR$" />
@@ -104,17 +116,30 @@
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
+    <configuration name="TestDynamicReader_Read in cont/cmd/daemon" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="cont" />
+      <working_directory value="$PROJECT_DIR$/cmd/daemon" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="cont/cmd/daemon" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <pattern value="^\QTestDynamicReader_Read\E$" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Go Build.go build cont" />
       <item itemvalue="Go Build.go build cont/cmd/daemon" />
       <item itemvalue="Go Build.go build cont/cmd/cli" />
       <item itemvalue="Go Build.go build cont/cmd/multiplex" />
+      <item itemvalue="Go Test.TestDynamicReader_Read in cont/cmd/daemon" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Build.go build cont/cmd/daemon" />
+        <item itemvalue="Go Test.TestDynamicReader_Read in cont/cmd/daemon" />
         <item itemvalue="Go Build.go build cont/cmd/multiplex" />
         <item itemvalue="Go Build.go build cont/cmd/cli" />
-        <item itemvalue="Go Build.go build cont/cmd/daemon" />
         <item itemvalue="Go Build.go build cont" />
       </list>
     </recent_temporary>
@@ -149,7 +174,8 @@
     <MESSAGE value="improved mux main func, multiplexing across multiple connections" />
     <MESSAGE value="session renamed to stream" />
     <MESSAGE value="multiplex package basic implementation" />
-    <option name="LAST_COMMIT_MESSAGE" value="multiplex package basic implementation" />
+    <MESSAGE value="cmd multiplex" />
+    <option name="LAST_COMMIT_MESSAGE" value="cmd multiplex" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

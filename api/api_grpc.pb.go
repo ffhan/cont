@@ -21,6 +21,7 @@ type ApiClient interface {
 	Ps(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ActiveProcesses, error)
 	Kill(ctx context.Context, in *KillCommand, opts ...grpc.CallOption) (*ContainerResponse, error)
 	Events(ctx context.Context, in *EventStreamRequest, opts ...grpc.CallOption) (Api_EventsClient, error)
+	RequestStream(ctx context.Context, opts ...grpc.CallOption) (Api_RequestStreamClient, error)
 }
 
 type apiClient struct {
@@ -90,6 +91,37 @@ func (x *apiEventsClient) Recv() (*Event, error) {
 	return m, nil
 }
 
+func (c *apiClient) RequestStream(ctx context.Context, opts ...grpc.CallOption) (Api_RequestStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Api_serviceDesc.Streams[1], "/api.Api/RequestStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &apiRequestStreamClient{stream}
+	return x, nil
+}
+
+type Api_RequestStreamClient interface {
+	Send(*StreamRequest) error
+	Recv() (*StreamResponse, error)
+	grpc.ClientStream
+}
+
+type apiRequestStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *apiRequestStreamClient) Send(m *StreamRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *apiRequestStreamClient) Recv() (*StreamResponse, error) {
+	m := new(StreamResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // ApiServer is the server API for Api service.
 // All implementations must embed UnimplementedApiServer
 // for forward compatibility
@@ -98,6 +130,7 @@ type ApiServer interface {
 	Ps(context.Context, *Empty) (*ActiveProcesses, error)
 	Kill(context.Context, *KillCommand) (*ContainerResponse, error)
 	Events(*EventStreamRequest, Api_EventsServer) error
+	RequestStream(Api_RequestStreamServer) error
 	mustEmbedUnimplementedApiServer()
 }
 
@@ -116,6 +149,9 @@ func (UnimplementedApiServer) Kill(context.Context, *KillCommand) (*ContainerRes
 }
 func (UnimplementedApiServer) Events(*EventStreamRequest, Api_EventsServer) error {
 	return status.Errorf(codes.Unimplemented, "method Events not implemented")
+}
+func (UnimplementedApiServer) RequestStream(Api_RequestStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method RequestStream not implemented")
 }
 func (UnimplementedApiServer) mustEmbedUnimplementedApiServer() {}
 
@@ -205,6 +241,32 @@ func (x *apiEventsServer) Send(m *Event) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _Api_RequestStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ApiServer).RequestStream(&apiRequestStreamServer{stream})
+}
+
+type Api_RequestStreamServer interface {
+	Send(*StreamResponse) error
+	Recv() (*StreamRequest, error)
+	grpc.ServerStream
+}
+
+type apiRequestStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *apiRequestStreamServer) Send(m *StreamResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *apiRequestStreamServer) Recv() (*StreamRequest, error) {
+	m := new(StreamRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 var _Api_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "api.Api",
 	HandlerType: (*ApiServer)(nil),
@@ -227,6 +289,12 @@ var _Api_serviceDesc = grpc.ServiceDesc{
 			StreamName:    "Events",
 			Handler:       _Api_Events_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "RequestStream",
+			Handler:       _Api_RequestStream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "api/api.proto",
