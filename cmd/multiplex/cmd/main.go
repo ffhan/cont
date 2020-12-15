@@ -1,44 +1,65 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"cont/cmd/multiplex"
 	"fmt"
+	"io"
 	"log"
 	"net"
+	"strconv"
+	"sync"
 	"time"
 )
 
+var mutex sync.Mutex
+
 func client() {
+	multiplexClient := multiplex.NewClient()
+	multiplexClient.Name = "client"
+
 	time.Sleep(100 * time.Millisecond)
 	dial, err := net.Dial("tcp", ":10000")
 	if err != nil {
 		panic(err)
 	}
-	mux := multiplex.NewMux(dial)
-	mux.Name = "client"
+	mux := multiplexClient.NewMux(dial)
+	mux.Name = "mux1"
 
 	go func() {
 		s1 := mux.NewSession(1)
 		if _, err := fmt.Fprintln(s1, "hello from session 1!"); err != nil {
 			panic(err)
 		}
-		scanner := bufio.NewScanner(s1)
-		for scanner.Scan() {
-			log.Printf("%s:%d -> %s\n", mux.Name, 1, scanner.Text())
-		}
+		var buf bytes.Buffer
+		go io.Copy(&buf, s1)
+		time.Sleep(200 * time.Millisecond)
+		mutex.Lock()
+		defer mutex.Unlock()
+		log.Println("---------------------------")
+		log.Printf("%s:%s:%d\n", multiplexClient.Name, mux.Name, 1)
+		log.Println(buf.String())
 	}()
 
 	go func() {
-		s22 := mux.NewSession(2)
+		conn, err := net.Dial("tcp", ":10000")
+		if err != nil {
+			panic(err)
+		}
+		mux2 := multiplexClient.NewMux(conn)
+		mux2.Name = "mux2"
+		s22 := mux2.NewSession(2)
 		if _, err := fmt.Fprintln(s22, "hello from session 2 - copy!"); err != nil {
 			panic(err)
 		}
-		scanner := bufio.NewScanner(s22)
-		for scanner.Scan() {
-			log.Printf("%s:%d -> %s\n", mux.Name, 22, scanner.Text())
-		}
+		var buf bytes.Buffer
+		go io.Copy(&buf, s22)
+		time.Sleep(200 * time.Millisecond)
+		mutex.Lock()
+		defer mutex.Unlock()
+		log.Println("---------------------------")
+		log.Printf("%s:%s:%d\n", multiplexClient.Name, mux2.Name, 2)
+		log.Println(buf.String())
 	}()
 
 	go func() {
@@ -46,10 +67,14 @@ func client() {
 		if _, err := fmt.Fprintln(s2, "hello from session 2!"); err != nil {
 			panic(err)
 		}
-		scanner := bufio.NewScanner(s2)
-		for scanner.Scan() {
-			log.Printf("%s:%d -> %s\n", mux.Name, 2, scanner.Text())
-		}
+		var buf bytes.Buffer
+		go io.Copy(&buf, s2)
+		time.Sleep(200 * time.Millisecond)
+		mutex.Lock()
+		defer mutex.Unlock()
+		log.Println("---------------------------")
+		log.Printf("%s:%s:%d\n", multiplexClient.Name, mux.Name, 2)
+		log.Println(buf.String())
 	}()
 }
 
@@ -69,42 +94,55 @@ func main() {
 
 	go client()
 
+	multiplexClient := multiplex.NewClient()
+	multiplexClient.Name = "server"
+
+	counter := 0
 	for {
 		accept, err := listen.Accept()
 		if err != nil {
 			panic(err)
 		}
-		go func() {
-			mux := multiplex.NewMux(accept)
-			mux.Name = "server"
+		counter += 1
+		go func(counter int) {
+			mux := multiplexClient.NewMux(accept)
+			mux.Name = "mux" + strconv.Itoa(counter)
 
 			process1 := mux.NewSession(1)
 			process2 := mux.NewSession(2)
 
 			go func() {
-				if _, err := fmt.Fprintln(process1, "example of process 1 writing"); err != nil {
+				if _, err := fmt.Fprintln(process1, strconv.Itoa(counter)+": example of process 1 writing"); err != nil {
 					panic(err)
 				}
-				if _, err := fmt.Fprintln(process1, "example of process 1 writing... again!"); err != nil {
+				if _, err := fmt.Fprintln(process1, strconv.Itoa(counter)+": example of process 1 writing... again!"); err != nil {
 					panic(err)
 				}
-				scanner := bufio.NewScanner(process1)
-				for scanner.Scan() {
-					log.Printf("%s:%d -> %s\n", mux.Name, 1, scanner.Text())
-				}
+				var buf bytes.Buffer
+				go io.Copy(&buf, process1)
+				time.Sleep(200 * time.Millisecond)
+				mutex.Lock()
+				defer mutex.Unlock()
+				log.Println("---------------------------")
+				log.Printf("%s:%s:%d\n", multiplexClient.Name, mux.Name, 1)
+				log.Println(buf.String())
 			}()
 			go func() {
-				if _, err := fmt.Fprintln(process2, "example of process 2 writing"); err != nil {
+				if _, err := fmt.Fprintln(process2, strconv.Itoa(counter)+": example of process 2 writing"); err != nil {
 					panic(err)
 				}
-				if _, err := fmt.Fprintln(process2, "example of process 2 writing... again!"); err != nil {
+				if _, err := fmt.Fprintln(process2, strconv.Itoa(counter)+": example of process 2 writing... again!"); err != nil {
 					panic(err)
 				}
-				scanner := bufio.NewScanner(process2)
-				for scanner.Scan() {
-					log.Printf("%s:%d -> %s\n", mux.Name, 2, scanner.Text())
-				}
+				var buf bytes.Buffer
+				go io.Copy(&buf, process2)
+				time.Sleep(200 * time.Millisecond)
+				mutex.Lock()
+				defer mutex.Unlock()
+				log.Println("---------------------------")
+				log.Printf("%s:%s:%d\n", multiplexClient.Name, mux.Name, 2)
+				log.Println(buf.String())
 			}()
-		}()
+		}(counter)
 	}
 }

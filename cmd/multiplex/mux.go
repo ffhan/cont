@@ -32,17 +32,86 @@ func (s *session) Write(p []byte) (n int, err error) {
 	return len(p), err
 }
 
-type mux struct {
-	Name        string
-	conn        io.ReadWriteCloser
-	streams     map[int32][]*session
-	streamMutex sync.RWMutex
+func (s *session) Close() error {
+	return s.line.Close()
 }
 
-func NewMux(conn io.ReadWriteCloser) *mux {
+type client struct {
+	streams     map[int32]map[*session]bool
+	streamMutex sync.RWMutex
+	Name        string
+}
+
+func NewClient() *client {
+	return &client{streams: make(map[int32]map[*session]bool)}
+}
+
+func (c *client) Close() error {
+	for id, streams := range c.streams {
+		for stream := range streams {
+			err := stream.Close()
+			if err != nil {
+				log.Println(err)
+			}
+			c.removeStream(id, stream)
+		}
+	}
+	return nil
+}
+
+func (c *client) log(format string, args ...interface{}) {
+	log.Printf("%s:"+format, append([]interface{}{c.Name}, args...)...)
+}
+
+func (c *client) addStream(id int32, stream *session) {
+	//c.log("added stream %d", id)
+	c.streamMutex.Lock()
+	defer c.streamMutex.Unlock()
+	if _, ok := c.streams[id]; !ok {
+		c.streams[id] = make(map[*session]bool)
+	}
+	c.streams[id][stream] = true
+}
+
+func (c *client) removeStream(id int32, stream *session) {
+	//c.log("removed stream %d", id)
+	c.streamMutex.Lock()
+	defer c.streamMutex.Unlock()
+	if _, ok := c.streams[id]; !ok {
+		return
+	}
+	delete(c.streams[id], stream)
+}
+
+func (c *client) getStreams(id int32) []*session {
+	c.streamMutex.RLock()
+	defer c.streamMutex.RUnlock()
+	streams, ok := c.streams[id]
+	if !ok {
+		return []*session{}
+	}
+	result := make([]*session, 0, len(streams))
+	for s := range streams {
+		result = append(result, s)
+	}
+	return result
+}
+
+type mux struct {
+	client *client
+	Name   string
+	conn   io.ReadWriteCloser
+}
+
+func (m *mux) log(format string, args ...interface{}) {
+	m.client.log("%s: "+format, append([]interface{}{m.Name}, args...)...)
+}
+
+func (c *client) NewMux(conn io.ReadWriteCloser) *mux {
+	//c.log("created a new mux\n")
 	m := &mux{
-		conn:    conn,
-		streams: make(map[int32][]*session),
+		client: c,
+		conn:   conn,
 	}
 	go m.readIncoming()
 	return m
@@ -84,15 +153,7 @@ func (m *mux) readIncoming() {
 			p := results[i]
 			//fmt.Println(m.Name, p.Id, string(p.Data))
 
-			m.streamMutex.RLock()
-			streams, ok := m.streams[p.Id] // this assumes 1:1 multiplexing, we'd like M:N (just store an array of streams)
-			if !ok {
-				log.Printf("no stream with id %d\n", p.Id)
-				m.streamMutex.RUnlock()
-				break
-			}
-			m.streamMutex.RUnlock()
-			for _, stream := range streams {
+			for _, stream := range m.client.getStreams(p.Id) {
 				if _, err := stream.line.Write(p.Data); err != nil {
 					log.Printf("cannot write to stream line: %v\n", err)
 					m.closeSession(p.Id)
@@ -131,35 +192,26 @@ func (b *blockingReader) Close() error {
 }
 
 func (m *mux) NewSession(id int32) *session {
+	//m.log("created a new session %d", id)
 	sesh := &session{
 		client: m,
 		id:     id,
 		conn:   m.conn,
 		line:   newBlockingReader(), // we used a byte buffer here before, but it's a non blocking read which doesn't suit us
 	}
-	m.streamMutex.Lock()
-	defer m.streamMutex.Unlock()
-	if _, ok := m.streams[id]; !ok {
-		m.streams[id] = make([]*session, 0, 4)
-	}
-	m.streams[id] = append(m.streams[id], sesh)
+	m.client.addStream(id, sesh)
 	return sesh
 }
 
 func (m *mux) closeSession(id int32) {
-	m.streamMutex.Lock()
-	defer m.streamMutex.Unlock()
-	for _, stream := range m.streams[id] {
+	for _, stream := range m.client.getStreams(id) {
 		if err := stream.line.Close(); err != nil {
 			log.Printf("canont close stream line: %v\n", err)
 		}
+		m.client.removeStream(id, stream)
 	}
-	delete(m.streams, id)
 }
 
 func (m *mux) Close() error {
-	for id := range m.streams {
-		m.closeSession(id)
-	}
-	return nil
+	return m.conn.Close()
 }
