@@ -9,18 +9,18 @@ import (
 	"sync"
 )
 
-type session struct {
+type stream struct {
 	client *mux
 	id     int32
 	conn   io.ReadWriter
 	line   io.ReadWriteCloser
 }
 
-func (s *session) Read(p []byte) (n int, err error) {
+func (s *stream) Read(p []byte) (n int, err error) {
 	return s.line.Read(p)
 }
 
-func (s *session) Write(p []byte) (n int, err error) {
+func (s *stream) Write(p []byte) (n int, err error) {
 	payload, err := proto.Marshal(&api.Packet{
 		Id:   s.id,
 		Data: p,
@@ -32,18 +32,18 @@ func (s *session) Write(p []byte) (n int, err error) {
 	return len(p), err
 }
 
-func (s *session) Close() error {
+func (s *stream) Close() error {
 	return s.line.Close()
 }
 
 type client struct {
-	streams     map[int32]map[*session]bool
+	streams     map[int32]map[*stream]bool
 	streamMutex sync.RWMutex
 	Name        string
 }
 
 func NewClient() *client {
-	return &client{streams: make(map[int32]map[*session]bool)}
+	return &client{streams: make(map[int32]map[*stream]bool)}
 }
 
 func (c *client) Close() error {
@@ -63,17 +63,17 @@ func (c *client) log(format string, args ...interface{}) {
 	log.Printf("%s:"+format, append([]interface{}{c.Name}, args...)...)
 }
 
-func (c *client) addStream(id int32, stream *session) {
+func (c *client) addStream(id int32, str *stream) {
 	//c.log("added stream %d", id)
 	c.streamMutex.Lock()
 	defer c.streamMutex.Unlock()
 	if _, ok := c.streams[id]; !ok {
-		c.streams[id] = make(map[*session]bool)
+		c.streams[id] = make(map[*stream]bool)
 	}
-	c.streams[id][stream] = true
+	c.streams[id][str] = true
 }
 
-func (c *client) removeStream(id int32, stream *session) {
+func (c *client) removeStream(id int32, stream *stream) {
 	//c.log("removed stream %d", id)
 	c.streamMutex.Lock()
 	defer c.streamMutex.Unlock()
@@ -83,14 +83,14 @@ func (c *client) removeStream(id int32, stream *session) {
 	delete(c.streams[id], stream)
 }
 
-func (c *client) getStreams(id int32) []*session {
+func (c *client) getStreams(id int32) []*stream {
 	c.streamMutex.RLock()
 	defer c.streamMutex.RUnlock()
 	streams, ok := c.streams[id]
 	if !ok {
-		return []*session{}
+		return []*stream{}
 	}
-	result := make([]*session, 0, len(streams))
+	result := make([]*stream, 0, len(streams))
 	for s := range streams {
 		result = append(result, s)
 	}
@@ -191,9 +191,9 @@ func (b *blockingReader) Close() error {
 	return err2
 }
 
-func (m *mux) NewSession(id int32) *session {
-	//m.log("created a new session %d", id)
-	sesh := &session{
+func (m *mux) NewStream(id int32) *stream {
+	//m.log("created a new stream %d", id)
+	sesh := &stream{
 		client: m,
 		id:     id,
 		conn:   m.conn,

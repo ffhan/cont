@@ -27,7 +27,7 @@ func client() {
 	mux.Name = "mux1"
 
 	go func() {
-		s1 := mux.NewSession(1)
+		s1 := mux.NewStream(1)
 		if _, err := fmt.Fprintln(s1, "hello from session 1!"); err != nil {
 			panic(err)
 		}
@@ -48,7 +48,7 @@ func client() {
 		}
 		mux2 := multiplexClient.NewMux(conn)
 		mux2.Name = "mux2"
-		s22 := mux2.NewSession(2)
+		s22 := mux2.NewStream(2)
 		if _, err := fmt.Fprintln(s22, "hello from session 2 - copy!"); err != nil {
 			panic(err)
 		}
@@ -63,7 +63,7 @@ func client() {
 	}()
 
 	go func() {
-		s2 := mux.NewSession(2)
+		s2 := mux.NewStream(2)
 		if _, err := fmt.Fprintln(s2, "hello from session 2!"); err != nil {
 			panic(err)
 		}
@@ -108,8 +108,8 @@ func main() {
 			mux := multiplexClient.NewMux(accept)
 			mux.Name = "mux" + strconv.Itoa(counter)
 
-			process1 := mux.NewSession(1)
-			process2 := mux.NewSession(2)
+			process1 := mux.NewStream(1)
+			process2 := mux.NewStream(2)
 
 			go func() {
 				if _, err := fmt.Fprintln(process1, strconv.Itoa(counter)+": example of process 1 writing"); err != nil {

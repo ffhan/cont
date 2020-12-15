@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="M:N multiplexing">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="improved mux main func, multiplexing across multiple connections">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/multiplex/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/cmd/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/mux.go" afterDir="false" />
@@ -142,7 +142,8 @@
     <MESSAGE value="multiplexing a tcp connection POC" />
     <MESSAGE value="cleaned up main" />
     <MESSAGE value="M:N multiplexing" />
-    <option name="LAST_COMMIT_MESSAGE" value="M:N multiplexing" />
+    <MESSAGE value="improved mux main func, multiplexing across multiple connections" />
+    <option name="LAST_COMMIT_MESSAGE" value="improved mux main func, multiplexing across multiple connections" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
