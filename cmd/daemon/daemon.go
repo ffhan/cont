@@ -131,35 +131,12 @@ func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
 		errStream := conn.mux.NewStream(stderrId)
 
 		fmt.Println("created new streams")
-
+		// fixme: go run cmd/cli/cli.go run --host 127.0.0.1 --workdir /home/fhancic --hostname test2 ./skripta.sh
+		// remote continuous stdout works (at least for 1 client)
 		// todo: what about removing streams?
 		cont.Stdin.Add(inStream)
 		cont.Stdout.Add(outStream)
 		cont.Stderr.Add(errStream)
-
-		time.Sleep(500 * time.Millisecond)
-
-		if _, err := outStream.Write([]byte("outStream direct")); err != nil {
-			must(err)
-		}
-		// for some reason streaming to something that's connected to stdin completely blocks everything
-		// probably because nothing is reading from stdin?
-		//if _, err := inStream.Write([]byte("inStream direct")); err != nil {
-		//	must(err)
-		//}
-		if _, err := errStream.Write([]byte("errStream direct")); err != nil {
-			must(err)
-		}
-
-		//if _, err := cont.Stdin.Write([]byte("inStream")); err != nil {
-		//	must(err)
-		//}
-		if _, err := cont.Stdout.Write([]byte("outStream")); err != nil {
-			must(err)
-		}
-		if _, err := cont.Stderr.Write([]byte("errStream")); err != nil {
-			must(err)
-		}
 
 		fmt.Printf("attached remote streams to container %s\n", containerId.String())
 	}
@@ -242,6 +219,7 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 	stdoutReader, stdoutWriter := io.Pipe()
 	stderrReader, stderrWriter := io.Pipe()
 
+	// fixme: we can probably work without pipes
 	go io.Copy(stdinWriter, stdin)
 	go io.Copy(stdout, stdoutReader)
 	go io.Copy(stderr, stderrReader)
