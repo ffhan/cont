@@ -28,9 +28,11 @@ func (m *Mux) logf(format string, args ...interface{}) {
 	m.client.logf("%s: "+format, append([]interface{}{m.Name}, args...)...)
 }
 
+const maxBuffer = 32768
+
 // read incoming data from a connection and pass it to appropriate streams
 func (m *Mux) readIncoming() {
-	buffer := make([]byte, 2048) // todo: is 2k memory enough?
+	buffer := make([]byte, maxBuffer)
 	for {
 		read, err := m.conn.Read(buffer)
 		data := buffer[:read]

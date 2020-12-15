@@ -34,7 +34,25 @@ func (s *Stream) Write(p []byte) (n int, err error) {
 	if err != nil {
 		return 0, err
 	}
-	_, err = s.output.Write(payload)
+	idx := 0
+	if len(payload) <= maxBuffer {
+		_, err := s.output.Write(payload)
+		return len(p), err
+	}
+	packet := payload[maxBuffer*idx : maxBuffer*(idx+1)]
+	for len(packet) > 0 {
+		_, err = s.output.Write(packet)
+		idx += 1
+		start := maxBuffer * idx
+		end := maxBuffer * (idx + 1)
+		if start >= len(payload) {
+			break
+		}
+		if end >= len(payload) {
+			end = len(payload) - 1
+		}
+		packet = payload[start:end]
+	}
 	return len(p), err
 }
 
