@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="session renamed to stream">
-      <change afterPath="$PROJECT_DIR$/multiplex/blocking_reader.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/multiplex/client.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/multiplex/stream.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="multiplex package basic implementation">
+      <change beforePath="$PROJECT_DIR$/cmd/multiplex/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/multiplex/mux.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,13 +58,14 @@
       <recent name="$PROJECT_DIR$/multiplex" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cmd/multiplex" />
       <recent name="$PROJECT_DIR$/assets" />
       <recent name="$PROJECT_DIR$/cmd/socket_test/server" />
       <recent name="$PROJECT_DIR$/cmd/cli" />
       <recent name="$PROJECT_DIR$/container" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Build.go build cont/cmd/multiplex/cmd">
+  <component name="RunManager" selected="Go Build.go build cont/cmd/multiplex">
     <configuration name="go build cont" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="cont" />
       <working_directory value="$PROJECT_DIR$" />
@@ -97,12 +95,12 @@
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
-    <configuration name="go build cont/cmd/multiplex/cmd" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+    <configuration name="go build cont/cmd/multiplex" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="cont" />
       <working_directory value="$PROJECT_DIR$" />
       <kind value="PACKAGE" />
       <filePath value="$PROJECT_DIR$/cmd/multiplex/cmd/main.go" />
-      <package value="cont/cmd/multiplex/cmd" />
+      <package value="cont/cmd/multiplex" />
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
@@ -110,11 +108,11 @@
       <item itemvalue="Go Build.go build cont" />
       <item itemvalue="Go Build.go build cont/cmd/daemon" />
       <item itemvalue="Go Build.go build cont/cmd/cli" />
-      <item itemvalue="Go Build.go build cont/cmd/multiplex/cmd" />
+      <item itemvalue="Go Build.go build cont/cmd/multiplex" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Build.go build cont/cmd/multiplex/cmd" />
+        <item itemvalue="Go Build.go build cont/cmd/multiplex" />
         <item itemvalue="Go Build.go build cont/cmd/cli" />
         <item itemvalue="Go Build.go build cont/cmd/daemon" />
         <item itemvalue="Go Build.go build cont" />
@@ -150,7 +148,8 @@
     <MESSAGE value="M:N multiplexing" />
     <MESSAGE value="improved mux main func, multiplexing across multiple connections" />
     <MESSAGE value="session renamed to stream" />
-    <option name="LAST_COMMIT_MESSAGE" value="session renamed to stream" />
+    <MESSAGE value="multiplex package basic implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="multiplex package basic implementation" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -164,7 +163,7 @@
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/cmd/multiplex/cmd/main.go</url>
+          <url>file://$PROJECT_DIR$/cmd/multiplex/main.go</url>
           <line>101</line>
           <option name="timeStamp" value="33" />
         </line-breakpoint>

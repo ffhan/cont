@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"cont/cmd/multiplex"
+	"cont/multiplex"
 	"fmt"
 	"io"
 	"log"
