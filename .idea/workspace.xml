@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="improved mux main func, multiplexing across multiple connections">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="session renamed to stream">
+      <change afterPath="$PROJECT_DIR$/multiplex/blocking_reader.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/multiplex/client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/multiplex/stream.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/multiplex/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/mux.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,8 +19,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Go File" />
         <option value="Go Application" />
+        <option value="Go File" />
       </list>
     </option>
   </component>
@@ -37,22 +39,26 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="DefaultGoTemplateProperty" value="Go Application" />
+    <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/multiplex" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="GoMoveDeclarationDialog.RECENT_KEY">
+      <recent name="$PROJECT_DIR$/multiplex" />
       <recent name="$PROJECT_DIR$/cmd" />
       <recent name="$PROJECT_DIR$/cmd/socket_test" />
       <recent name="$PROJECT_DIR$/container" />
       <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/multiplex" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/assets" />
@@ -143,7 +149,8 @@
     <MESSAGE value="cleaned up main" />
     <MESSAGE value="M:N multiplexing" />
     <MESSAGE value="improved mux main func, multiplexing across multiple connections" />
-    <option name="LAST_COMMIT_MESSAGE" value="improved mux main func, multiplexing across multiple connections" />
+    <MESSAGE value="session renamed to stream" />
+    <option name="LAST_COMMIT_MESSAGE" value="session renamed to stream" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
