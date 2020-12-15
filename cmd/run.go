@@ -23,6 +23,7 @@ var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "run a container",
 	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(os.Getpid())
 		clientID := uuid.New()
 		clientIDBytes, err := clientID.MarshalBinary()
 		must(err)
@@ -58,6 +59,34 @@ var runCmd = &cobra.Command{
 		signals := make(chan os.Signal, 1)
 		signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT)
 
+		started := make(chan bool, 1)
+
+		go func() {
+			events, err := client.Events(context.Background(), &api.EventStreamRequest{Id: response.Uuid})
+			if err != nil {
+				signals <- syscall.SIGTERM
+				return
+			}
+			for {
+				event, err := events.Recv()
+				if err != nil {
+					log.Println(err)
+					signals <- syscall.SIGTERM
+					break
+				}
+				if event.Type == Started {
+					started <- true
+				}
+				if event.Type == Killed {
+					fmt.Println("container has been killed")
+				}
+				if event.Type == Done || event.Type == Killed {
+					signals <- syscall.SIGTERM
+					return
+				}
+			}
+		}()
+
 		var stdin, stdout, stderr io.ReadWriteCloser
 		if isLocal {
 			fmt.Println("attaching to a local container")
@@ -78,6 +107,7 @@ var runCmd = &cobra.Command{
 			stdout = pipes[1]
 			stderr = pipes[2]
 		} else {
+			<-started
 			fmt.Println("attaching to a remote container")
 			streamingConn, err := net.Dial("tcp", StreamingPort)
 			must(err)
@@ -97,33 +127,12 @@ var runCmd = &cobra.Command{
 			streamResponse, err := streamRequestClient.Recv()
 			must(err)
 
+			fmt.Println("response: ", streamResponse)
+
 			stdin = mux.NewStream(streamResponse.InId)
 			stdout = mux.NewStream(streamResponse.OutId)
 			stderr = mux.NewStream(streamResponse.ErrId)
 		}
-
-		go func() {
-			events, err := client.Events(context.Background(), &api.EventStreamRequest{Id: response.Uuid})
-			if err != nil {
-				signals <- syscall.SIGTERM
-				return
-			}
-			for {
-				event, err := events.Recv()
-				if err != nil {
-					log.Println(err)
-					signals <- syscall.SIGTERM
-					break
-				}
-				if event.Type == Killed {
-					fmt.Println("container has been killed")
-				}
-				if event.Type == Done || event.Type == Killed {
-					signals <- syscall.SIGTERM
-					return
-				}
-			}
-		}()
 
 		var wg sync.WaitGroup
 

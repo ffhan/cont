@@ -3,6 +3,7 @@ package multiplex
 import (
 	"cont/api"
 	"errors"
+	"fmt"
 	"github.com/golang/protobuf/proto"
 	"io"
 	"log"
@@ -62,15 +63,19 @@ func (m *Mux) readIncoming() {
 		}
 		for i := len(results) - 1; i >= 0; i-- { // write data in reverse to appropriate streams
 			p := results[i]
-			//fmt.Println(m.Name, p.Id, string(p.Data))
+			fmt.Println(m.Name, p.Id, string(p.Data))
 
-			for _, stream := range m.client.getStreams(p.Id) {
+			streams := m.client.getStreams(p.Id)
+			fmt.Println("streams: ", streams)
+			for _, stream := range streams {
 				if _, err := stream.input.Write(p.Data); err != nil {
 					log.Printf("cannot write to Stream input: %v\n", err)
 					if err := m.closeStream(stream); err != nil { // close the Stream if write unsuccessful
 						m.logf("cannot close a Stream %s: %v", stream.id, err)
 					}
 					break
+				} else {
+					log.Printf("%s sent to stream %s", string(p.Data), stream.id)
 				}
 			}
 		}

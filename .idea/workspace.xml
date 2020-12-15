@@ -4,19 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="cmd multiplex">
-      <change afterPath="$PROJECT_DIR$/cmd/daemon/process_pipe.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/daemon/process_pipe_test.go" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="remote run">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/api.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/api.proto" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/api_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/api_grpc.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/multiplex/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/root.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/root.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/process_pipe.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/process_pipe.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/run.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/client.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplex/stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/stream.go" afterDir="false" />
     </list>
@@ -35,6 +27,11 @@
   </component>
   <component name="GOROOT" url="file:///usr/lib/go" />
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GoLibraries">
@@ -175,7 +172,8 @@
     <MESSAGE value="session renamed to stream" />
     <MESSAGE value="multiplex package basic implementation" />
     <MESSAGE value="cmd multiplex" />
-    <option name="LAST_COMMIT_MESSAGE" value="cmd multiplex" />
+    <MESSAGE value="remote run" />
+    <option name="LAST_COMMIT_MESSAGE" value="remote run" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

@@ -2,6 +2,7 @@ package multiplex
 
 import (
 	"cont/api"
+	"fmt"
 	"github.com/golang/protobuf/proto"
 	"io"
 )
@@ -14,11 +15,18 @@ type Stream struct {
 	input  io.ReadWriteCloser // Stream input - receives data from Mux
 }
 
+func (s *Stream) String() string {
+	return fmt.Sprintf("Stream(client: %s, mux: %s, id: %s)", s.client.client.Name, s.client.Name, s.id)
+}
+
 func (s *Stream) Read(p []byte) (n int, err error) {
-	return s.input.Read(p)
+	n, err = s.input.Read(p)
+	fmt.Println(s.id, " read: ", string(p[:n]))
+	return n, err
 }
 
 func (s *Stream) Write(p []byte) (n int, err error) {
+	fmt.Println(s.id, " written: ", string(p))
 	payload, err := proto.Marshal(&api.Packet{
 		Id:   s.id,
 		Data: p,

@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -23,12 +24,11 @@ import (
 )
 
 type Container struct {
-	Cmd            *exec.Cmd
-	Name           string
-	Id             uuid.UUID
-	Command        string
-	Stdin          *dynamicReader
-	Stdout, Stderr *dynamicWriter
+	Cmd                   *exec.Cmd
+	Name                  string
+	Id                    uuid.UUID
+	Command               string
+	Stdin, Stdout, Stderr *dynamicPipe
 }
 
 type server struct {
@@ -62,11 +62,12 @@ func (s *server) acceptStreamConnections(listener net.Listener) {
 			log.Printf("cannot accept a connection: %v", err)
 			return
 		}
-		defer accept.Close()
+		fmt.Println("accepted a streaming connection")
+
 		clientID := uuid.UUID{}
 		if err = gob.NewDecoder(accept).Decode(&clientID); err != nil {
 			log.Printf("cannot decode a client ID: %v", err)
-			return
+			continue
 		}
 		s.connectionsMutex.Lock()
 		s.connections[clientID] = &streamConn{
@@ -74,6 +75,7 @@ func (s *server) acceptStreamConnections(listener net.Listener) {
 			mux:  s.muxClient.NewMux(accept),
 		}
 		s.connectionsMutex.Unlock()
+		fmt.Println("added mux to connections")
 	}
 }
 
@@ -83,6 +85,7 @@ func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
 		if err != nil {
 			return err
 		}
+		fmt.Println("received a stream request")
 		clientID, err := uuid.FromBytes(recv.ClientId)
 		if err != nil {
 			return err
@@ -109,23 +112,61 @@ func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
 
 		cIDString := containerId.String()
 		stdinId := cIDString + "-0"
-		stdinOut := cIDString + "-1"
-		stdinErr := cIDString + "-2"
+		stdoutId := cIDString + "-1"
+		stderrId := cIDString + "-2"
+
+		if err = streamServer.Send(&api.StreamResponse{
+			InId:  stdinId,
+			OutId: stdoutId,
+			ErrId: stderrId,
+		}); err != nil {
+			return err
+		}
+
+		fmt.Println(stdinId, stdoutId, stderrId)
 
 		// create streams
 		inStream := conn.mux.NewStream(stdinId)
-		outStream := conn.mux.NewStream(stdinOut)
-		errStream := conn.mux.NewStream(stdinErr)
+		outStream := conn.mux.NewStream(stdoutId)
+		errStream := conn.mux.NewStream(stderrId)
+
+		fmt.Println("created new streams")
 
 		// todo: what about removing streams?
-		cont.Stdin.AddReader(inStream)
-		cont.Stdout.AddWriter(outStream)
-		cont.Stderr.AddWriter(errStream)
+		cont.Stdin.Add(inStream)
+		cont.Stdout.Add(outStream)
+		cont.Stderr.Add(errStream)
+
+		time.Sleep(500 * time.Millisecond)
+
+		if _, err := outStream.Write([]byte("outStream direct")); err != nil {
+			must(err)
+		}
+		// for some reason streaming to something that's connected to stdin completely blocks everything
+		// probably because nothing is reading from stdin?
+		//if _, err := inStream.Write([]byte("inStream direct")); err != nil {
+		//	must(err)
+		//}
+		if _, err := errStream.Write([]byte("errStream direct")); err != nil {
+			must(err)
+		}
+
+		//if _, err := cont.Stdin.Write([]byte("inStream")); err != nil {
+		//	must(err)
+		//}
+		if _, err := cont.Stdout.Write([]byte("outStream")); err != nil {
+			must(err)
+		}
+		if _, err := cont.Stderr.Write([]byte("errStream")); err != nil {
+			must(err)
+		}
+
+		fmt.Printf("attached remote streams to container %s\n", containerId.String())
 	}
 }
 
 var (
-	currentlyRunning = make(map[uuid.UUID]Container) // todo: transfer to a server struct
+	currentlyRunning = make(map[uuid.UUID]*Container) // todo: transfer to a server struct
 	events           = make(map[uuid.UUID]chan *api.Event)
 	mutex            sync.Mutex
 )
@@ -186,21 +227,29 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 		Data:    nil,
 	}
 
-	stdin := NewDynamicReader()
-	stdin.AddReader(pipes[0])
-	stdout := NewDynamicWriter()
-	stdout.AddWriter(pipes[1])
-	stderr := NewDynamicWriter()
-	stderr.AddWriter(pipes[2])
+	stdin := NewDynamicPipe()
+	stdin.Add(pipes[0])
+	stdout := NewDynamicPipe()
+	stdout.Add(pipes[1])
+	stderr := NewDynamicPipe()
+	stderr.Add(pipes[2])
 
 	defer stderr.Close()
 	defer stdout.Close()
 	defer stdin.Close()
 
+	stdinReader, stdinWriter := io.Pipe()
+	stdoutReader, stdoutWriter := io.Pipe()
+	stderrReader, stderrWriter := io.Pipe()
+
+	go io.Copy(stdinWriter, stdin)
+	go io.Copy(stdout, stdoutReader)
+	go io.Copy(stderr, stderrReader)
+
 	containerCommand, err := container.Start(&container.Config{
-		Stdin:    stdin,
-		Stdout:   stdout,
-		Stderr:   stderr,
+		Stdin:    stdinReader,
+		Stdout:   stdoutWriter,
+		Stderr:   stderrWriter,
 		Hostname: request.Hostname,
 		Workdir:  request.Workdir,
 		Cmd:      request.Cmd,
@@ -218,9 +267,9 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 		Data:    nil,
 	}
 	fmt.Printf("container %s started\n", id.String())
-	mutex.Lock()
 
-	currentlyRunning[id] = Container{
+	mutex.Lock()
+	currentlyRunning[id] = &Container{
 		Cmd:     containerCommand,
 		Name:    request.Name,
 		Id:      id,
