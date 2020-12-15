@@ -4,14 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="remote run WIP">
-      <change afterPath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe_test.go" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="remote stdin, stdout, stderr">
+      <change afterPath="$PROJECT_DIR$/cmd/attach.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/process_pipe.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/process_pipe_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/stream.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/run.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,8 +19,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Go File" />
         <option value="Go Application" />
+        <option value="Go File" />
       </list>
     </option>
   </component>
@@ -46,7 +44,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="DefaultGoTemplateProperty" value="Go Application" />
+    <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -58,8 +56,8 @@
   </component>
   <component name="RecentsManager">
     <key name="GoMoveDeclarationDialog.RECENT_KEY">
-      <recent name="$PROJECT_DIR$/multiplex" />
       <recent name="$PROJECT_DIR$/cmd" />
+      <recent name="$PROJECT_DIR$/multiplex" />
       <recent name="$PROJECT_DIR$/cmd/socket_test" />
       <recent name="$PROJECT_DIR$/container" />
       <recent name="$PROJECT_DIR$" />
@@ -178,7 +176,8 @@
     <MESSAGE value="cmd multiplex" />
     <MESSAGE value="remote run" />
     <MESSAGE value="remote run WIP" />
-    <option name="LAST_COMMIT_MESSAGE" value="remote run WIP" />
+    <MESSAGE value="remote stdin, stdout, stderr" />
+    <option name="LAST_COMMIT_MESSAGE" value="remote stdin, stdout, stderr" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

@@ -39,6 +39,14 @@ Daemon: `go run cmd/daemon/daemon.go`
 * [x] killing containers through CLI (almost!)
 * [ ] secure gRPC communication
 
+## Remote IPC TODO
+
+* [ ] signalling container kill (reuse gRPC kill)
+* [ ] attach to a container
+* [ ] clean up multiplex module & dynamic pipe
+* [ ] clean up daemon & CLI codebase
+* [ ] dropped connection/stream detection & cleanup
+
 ## Examples
 
 ```bash
