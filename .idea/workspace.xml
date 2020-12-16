@@ -4,12 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="remote stdin, stdout, stderr">
-      <change afterPath="$PROJECT_DIR$/cmd/attach.go" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="cleanup, attach cmd">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/attach.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/attach.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/stream.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -177,7 +180,8 @@
     <MESSAGE value="remote run" />
     <MESSAGE value="remote run WIP" />
     <MESSAGE value="remote stdin, stdout, stderr" />
-    <option name="LAST_COMMIT_MESSAGE" value="remote stdin, stdout, stderr" />
+    <MESSAGE value="cleanup, attach cmd" />
+    <option name="LAST_COMMIT_MESSAGE" value="cleanup, attach cmd" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -202,13 +206,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go</url>
-          <line>80</line>
-          <option name="timeStamp" value="37" />
+          <line>167</line>
+          <option name="timeStamp" value="41" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go</url>
-          <line>69</line>
-          <option name="timeStamp" value="39" />
+          <line>174</line>
+          <option name="timeStamp" value="42" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

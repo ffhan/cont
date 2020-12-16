@@ -2,6 +2,7 @@ package main
 
 import (
 	"container/ring"
+	"fmt"
 	"io"
 	"sync"
 	"time"
@@ -88,6 +89,7 @@ func (d *dynamicPipe) bgRead(reader io.ReadWriteCloser) {
 		d.ringMutex.Lock()
 
 		d.ringBuffer.Value = result
+		fmt.Println("set ringBuffer value: ", string(result), reader)
 		d.ringBuffer = d.ringBuffer.Next()
 		select {
 		case d.gotData <- true:
@@ -117,6 +119,7 @@ func (d *dynamicPipe) updateCurrentRead(b []byte) {
 	d.readMutex.Lock()
 	d.readMutex.Unlock()
 	d.readRing.Value = b
+	fmt.Println("set current read: ", string(b))
 }
 
 func (d *dynamicPipe) nextWrite() {
@@ -126,6 +129,9 @@ func (d *dynamicPipe) nextWrite() {
 }
 
 func (d *dynamicPipe) Read(p []byte) (n int, err error) {
+	defer func() {
+		fmt.Println("read: ", string(p[:n]))
+	}()
 	for len(d.getPipes()) > 0 || d.getValue() != nil {
 		bytes := d.getValue()
 		if bytes == nil {
@@ -158,9 +164,13 @@ func (d *dynamicPipe) Read(p []byte) (n int, err error) {
 }
 
 func (d *dynamicPipe) Write(p []byte) (n int, err error) {
+	fmt.Println(d.pipes)
 	for writer := range d.pipes {
-		writer := writer
-		go writer.Write(p)
+		w := writer
+		go func() {
+			fmt.Println("written to ", w)
+			w.Write(p)
+		}()
 	}
 	return len(p), nil
 }

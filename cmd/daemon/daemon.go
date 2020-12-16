@@ -70,9 +70,11 @@ func (s *server) acceptStreamConnections(listener net.Listener) {
 			continue
 		}
 		s.connectionsMutex.Lock()
+		mux := s.muxClient.NewMux(accept)
+		mux.Name = clientID.String()
 		s.connections[clientID] = &streamConn{
 			Conn: accept,
-			mux:  s.muxClient.NewMux(accept),
+			mux:  mux,
 		}
 		s.connectionsMutex.Unlock()
 		fmt.Println("added mux to connections")

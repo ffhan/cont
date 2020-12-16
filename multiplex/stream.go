@@ -16,17 +16,15 @@ type Stream struct {
 }
 
 func (s *Stream) String() string {
-	return fmt.Sprintf("Stream(client: %s, mux: %s, id: %s)", s.client.client.Name, s.client.Name, s.id)
+	return fmt.Sprintf("Stream(client: %s, mux: %s, id: %s, input: %p, output: %p)", s.client.client.Name, s.client.Name, s.id, s.input, s.output)
 }
 
 func (s *Stream) Read(p []byte) (n int, err error) {
 	n, err = s.input.Read(p)
-	fmt.Println(s.id, " read: ", string(p[:n]))
 	return n, err
 }
 
 func (s *Stream) Write(p []byte) (n int, err error) {
-	fmt.Println(s.id, " written: ", string(p))
 	payload, err := proto.Marshal(&api.Packet{
 		Id:   s.id,
 		Data: p,

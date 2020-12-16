@@ -119,26 +119,33 @@ func setupLocalPipes(containerID uuid.UUID, started chan bool) [3]*os.File {
 	return pipes
 }
 
-func setupRemotePipes(client api.ApiClient, clientID uuid.UUID, clientIDBytes, containerIDBytes []byte, started chan bool) (io.ReadWriteCloser, io.ReadWriteCloser, io.ReadWriteCloser) {
-	<-started
+func setupRemotePipes(client api.ApiClient, clientID uuid.UUID, clientIDBytes, containerIDBytes []byte) (io.ReadWriteCloser, io.ReadWriteCloser, io.ReadWriteCloser) {
+	//fmt.Println("initiating remote pipe setup")
 	streamingConn, err := net.Dial("tcp", StreamingPort)
 	must(err)
+	//fmt.Println("tcp stream dial success")
 
 	// send our client ID
 	must(gob.NewEncoder(streamingConn).Encode(clientID))
 
+	//fmt.Println("sent client ID")
+
 	muxClient := multiplex.NewClient()
 	mux := muxClient.NewMux(streamingConn)
 
+	//fmt.Println("mux set up")
+
 	streamRequestClient, err := client.RequestStream(context.Background())
+	//fmt.Println("setup request stream")
 	must(err)
 	must(streamRequestClient.Send(&api.StreamRequest{
 		Id:       containerIDBytes,
 		ClientId: clientIDBytes,
 	}))
+	//fmt.Println("sent a stream request")
 	streamResponse, err := streamRequestClient.Recv()
 	must(err)
 
-	fmt.Println("response: ", streamResponse)
+	//fmt.Println("response: ", streamResponse)
 	return mux.NewStream(streamResponse.InId), mux.NewStream(streamResponse.OutId), mux.NewStream(streamResponse.ErrId)
 }

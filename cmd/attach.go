@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"cont/api"
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	"io"
@@ -23,7 +22,6 @@ var attachCmd = &cobra.Command{
 		containerIDBytes, err := containerID.MarshalBinary()
 		must(err)
 
-		fmt.Println(os.Getpid())
 		clientID := uuid.New()
 		clientIDBytes, err := clientID.MarshalBinary()
 		must(err)
@@ -46,15 +44,15 @@ var attachCmd = &cobra.Command{
 
 		var stdin, stdout, stderr io.ReadWriteCloser
 		if isLocal {
-			fmt.Println("attaching to a local container")
+			//fmt.Println("attaching to a local container")
 			pipes := setupLocalPipes(containerID, started)
 
 			stdin = pipes[0]
 			stdout = pipes[1]
 			stderr = pipes[2]
 		} else {
-			fmt.Println("attaching to a remote container")
-			stdin, stdout, stderr = setupRemotePipes(client, clientID, clientIDBytes, containerIDBytes, started)
+			//fmt.Println("attaching to a remote container")
+			stdin, stdout, stderr = setupRemotePipes(client, clientID, clientIDBytes, containerIDBytes)
 		}
 		defer closePipes(stdin, stdout, stderr)
 
