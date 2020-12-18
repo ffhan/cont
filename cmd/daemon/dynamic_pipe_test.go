@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"io/ioutil"
 	"testing"
 )
 
@@ -61,5 +62,39 @@ func TestDynamicPipe_Read_SmallBuffer(t *testing.T) {
 	_, err := pipe.Read(b)
 	if !errors.Is(err, io.EOF) {
 		t.Fatal(err)
+	}
+}
+
+func TestDynamicPipe_Write(t *testing.T) {
+	pipe := NewDynamicPipe()
+
+	b1 := &closerBufferString{}
+	b2 := &closerBufferString{}
+
+	pipe.Add(b1)
+	pipe.Add(b2)
+
+	expected := "test123"
+	_, err := pipe.Write([]byte(expected))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	result, err := ioutil.ReadAll(b1)
+	if err != nil {
+		t.Error(err)
+	}
+	resultString := string(result)
+	if resultString != expected {
+		t.Errorf("expected %s, got %s", expected, resultString)
+	}
+
+	result, err = ioutil.ReadAll(b2)
+	if err != nil {
+		t.Error(err)
+	}
+	resultString = string(result)
+	if resultString != expected {
+		t.Errorf("expected %s, got %s", expected, resultString)
 	}
 }

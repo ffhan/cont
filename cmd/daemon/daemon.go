@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
-	"io"
 	"log"
 	"net"
 	"os"
@@ -62,7 +61,7 @@ func (s *server) acceptStreamConnections(listener net.Listener) {
 			log.Printf("cannot accept a connection: %v", err)
 			return
 		}
-		fmt.Println("accepted a streaming connection")
+		log.Println("accepted a streaming connection")
 
 		clientID := uuid.UUID{}
 		if err = gob.NewDecoder(accept).Decode(&clientID); err != nil {
@@ -77,7 +76,7 @@ func (s *server) acceptStreamConnections(listener net.Listener) {
 			mux:  mux,
 		}
 		s.connectionsMutex.Unlock()
-		fmt.Println("added mux to connections")
+		log.Printf("added mux to connections for client %s\n", clientID.String())
 	}
 }
 
@@ -217,19 +216,10 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 	defer stdout.Close()
 	defer stdin.Close()
 
-	stdinReader, stdinWriter := io.Pipe()
-	stdoutReader, stdoutWriter := io.Pipe()
-	stderrReader, stderrWriter := io.Pipe()
-
-	// fixme: we can probably work without pipes
-	go io.Copy(stdinWriter, stdin)
-	go io.Copy(stdout, stdoutReader)
-	go io.Copy(stderr, stderrReader)
-
 	containerCommand, err := container.Start(&container.Config{
-		Stdin:    stdinReader,
-		Stdout:   stdoutWriter,
-		Stderr:   stderrWriter,
+		Stdin:    stdin,
+		Stdout:   stdout,
+		Stderr:   stderr,
 		Hostname: request.Hostname,
 		Workdir:  request.Workdir,
 		Cmd:      request.Cmd,

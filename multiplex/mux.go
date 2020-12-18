@@ -64,21 +64,28 @@ func (m *Mux) readIncoming() {
 		}
 		for i := len(results) - 1; i >= 0; i-- { // write data in reverse to appropriate streams
 			p := results[i]
-			//fmt.Println(m.Name, p.Id, string(p.Data))
+			//log.Println(m.Name, p.Id, string(p.Data))
 
 			streams := m.client.getStreams(p.Id)
+			var wg sync.WaitGroup
+			wg.Add(len(streams))
+
 			//fmt.Println("streams: ", streams)
 			for _, stream := range streams {
-				if _, err := stream.input.Write(p.Data); err != nil {
-					log.Printf("cannot write to Stream input: %v\n", err)
-					if err := m.closeStream(stream); err != nil { // close the Stream if write unsuccessful
-						m.logf("cannot close a Stream %s: %v", stream.id, err)
+				stream := stream
+				go func() {
+					defer wg.Done()
+					if _, err := stream.input.Write(p.Data); err != nil {
+						log.Printf("cannot write to Stream input: %v\n", err)
+						if err := m.closeStream(stream); err != nil { // close the Stream if write unsuccessful
+							m.logf("cannot close a Stream %s: %v", stream.id, err)
+						}
+						//} else {
+						//	log.Printf("%s sent to stream %s", string(p.Data), stream)
 					}
-					break
-					//} else {
-					//	log.Printf("%s sent to stream %s", string(p.Data), stream.id)
-				}
+				}()
 			}
+			wg.Wait()
 		}
 	}
 }
@@ -91,7 +98,7 @@ func (m *Mux) NewStream(id string) *Stream {
 		client: m,
 		id:     id,
 		output: m.conn,
-		input:  newBlockingReader(), // we used a byte buffer here before, but it's a non blocking read which doesn't suit us
+		input:  NewBlockingReader(), // we used a byte buffer here before, but it's a non blocking read which doesn't suit us
 	}
 	m.client.addStream(id, str)
 	m.streamMutex.Lock()

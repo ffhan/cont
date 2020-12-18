@@ -4,6 +4,7 @@ import (
 	"container/ring"
 	"fmt"
 	"io"
+	"log"
 	"sync"
 	"time"
 )
@@ -34,20 +35,21 @@ func NewDynamicPipe() *dynamicPipe {
 	}
 }
 
-func (d *dynamicPipe) Add(closer io.ReadWriteCloser) {
+func (d *dynamicPipe) Add(rw io.ReadWriteCloser) {
 	d.pipeMutex.Lock()
 	defer d.pipeMutex.Unlock()
-	d.pipes[closer] = make(chan bool, 1)
-	go d.bgRead(closer)
+	d.pipes[rw] = make(chan bool, 1)
+	go d.bgRead(rw)
 }
 
-func (d *dynamicPipe) Remove(closer io.ReadWriteCloser) {
+func (d *dynamicPipe) Remove(rw io.ReadWriteCloser) {
 	d.pipeMutex.Lock()
 	defer d.pipeMutex.Unlock()
-	if stopChan, ok := d.pipes[closer]; ok {
+	if stopChan, ok := d.pipes[rw]; ok {
 		close(stopChan)
 	}
-	delete(d.pipes, closer)
+	delete(d.pipes, rw)
+	fmt.Println("removed reader ", rw)
 }
 
 func (d *dynamicPipe) getPipes() map[io.ReadWriteCloser]chan bool {
@@ -66,21 +68,25 @@ func (d *dynamicPipe) getPipe(r io.ReadWriteCloser) (chan bool, bool) {
 func (d *dynamicPipe) bgRead(reader io.ReadWriteCloser) {
 	defer func() {
 		delete(d.pipes, reader)
+		fmt.Printf("bgRead removed %p\n", reader)
 	}()
 	bytes := make([]byte, ringPieceBuffer)
 	for {
 		p, ok := d.getPipe(reader)
 		if !ok {
+			//log.Println("no pipe")
 			return
 		} else {
 			select {
 			case <-p:
+				//log.Printf("pipe %p done\n", p)
 				return
 			case <-time.After(10 * time.Microsecond):
 			}
 		}
 		read, err := reader.Read(bytes)
 		if err != nil {
+			log.Printf("cannot read from a pipe in dynamic pipe: %v", err)
 			return
 		}
 		result := make([]byte, read)
@@ -89,7 +95,6 @@ func (d *dynamicPipe) bgRead(reader io.ReadWriteCloser) {
 		d.ringMutex.Lock()
 
 		d.ringBuffer.Value = result
-		fmt.Println("set ringBuffer value: ", string(result), reader)
 		d.ringBuffer = d.ringBuffer.Next()
 		select {
 		case d.gotData <- true:
@@ -119,7 +124,6 @@ func (d *dynamicPipe) updateCurrentRead(b []byte) {
 	d.readMutex.Lock()
 	d.readMutex.Unlock()
 	d.readRing.Value = b
-	fmt.Println("set current read: ", string(b))
 }
 
 func (d *dynamicPipe) nextWrite() {
@@ -129,9 +133,6 @@ func (d *dynamicPipe) nextWrite() {
 }
 
 func (d *dynamicPipe) Read(p []byte) (n int, err error) {
-	defer func() {
-		fmt.Println("read: ", string(p[:n]))
-	}()
 	for len(d.getPipes()) > 0 || d.getValue() != nil {
 		bytes := d.getValue()
 		if bytes == nil {
@@ -164,14 +165,21 @@ func (d *dynamicPipe) Read(p []byte) (n int, err error) {
 }
 
 func (d *dynamicPipe) Write(p []byte) (n int, err error) {
-	fmt.Println(d.pipes)
-	for writer := range d.pipes {
+	var wg sync.WaitGroup
+	pipes := d.getPipes()
+	wg.Add(len(pipes))
+	for writer := range pipes {
 		w := writer
 		go func() {
-			fmt.Println("written to ", w)
-			w.Write(p)
+			defer wg.Done()
+			if _, err := w.Write(p); err != nil {
+				log.Printf("cannot write to %p: %v", w, err)
+				//} else {
+				//	log.Printf("written \"%s\" to %s", string(p), w)
+			}
 		}()
 	}
+	wg.Wait()
 	return len(p), nil
 }
 

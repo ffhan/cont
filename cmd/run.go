@@ -80,8 +80,16 @@ var runCmd = &cobra.Command{
 
 		var wg sync.WaitGroup
 
-		setupDetached(cmd, &wg, stdout, stderr)
-		setupInteractive(cmd, &wg, stdin)
+		if isDetached, err := cmd.Flags().GetBool("detached"); err == nil && !isDetached {
+			attachOutput(&wg, stdout, stderr)
+		} else {
+			must(err)
+		}
+		if isInteractive, err := cmd.Flags().GetBool("it"); err == nil && isInteractive {
+			setupInteractive(&wg, stdin)
+		} else {
+			must(err)
+		}
 		wg.Wait()
 	},
 }

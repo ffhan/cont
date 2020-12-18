@@ -4,13 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="cleanup, attach cmd">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="debugging">
+      <change afterPath="$PROJECT_DIR$/attach_container.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/run_container.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/attach.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/attach.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/multiplex/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/blocking_reader.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/blocking_reader.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplex/stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/stream.go" afterDir="false" />
     </list>
@@ -52,7 +57,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/multiplex" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
@@ -66,6 +71,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/multiplex" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -86,15 +92,13 @@
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestDynamicPipe_Read_BigBuffer in cont/cmd/daemon" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="go build cont/cmd/multiplex" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="cont" />
-      <working_directory value="$PROJECT_DIR$/cmd/daemon" />
-      <framework value="gotest" />
+      <working_directory value="$PROJECT_DIR$" />
       <kind value="PACKAGE" />
-      <package value="cont/cmd/daemon" />
+      <filePath value="$PROJECT_DIR$/cmd/multiplex/main.go" />
+      <package value="cont/cmd/multiplex" />
       <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <pattern value="^\QTestDynamicPipe_Read_BigBuffer\E$" />
       <method v="2" />
     </configuration>
     <configuration name="TestDynamicPipe_Read_SmallBuffer in cont/cmd/daemon" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
@@ -108,7 +112,7 @@
       <pattern value="^\QTestDynamicPipe_Read_SmallBuffer\E$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestDynamicReader_Read in cont/cmd/daemon" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestDynamicPipe_Write in cont/cmd/daemon" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="cont" />
       <working_directory value="$PROJECT_DIR$/cmd/daemon" />
       <framework value="gotest" />
@@ -116,7 +120,7 @@
       <package value="cont/cmd/daemon" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
-      <pattern value="^\QTestDynamicReader_Read\E$" />
+      <pattern value="^\QTestDynamicPipe_Write\E$" />
       <method v="2" />
     </configuration>
     <configuration name="go test cont/cmd/daemon" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
@@ -131,18 +135,18 @@
     </configuration>
     <list>
       <item itemvalue="Go Build.go build cont/cmd/daemon" />
-      <item itemvalue="Go Test.TestDynamicReader_Read in cont/cmd/daemon" />
-      <item itemvalue="Go Test.TestDynamicPipe_Read_BigBuffer in cont/cmd/daemon" />
       <item itemvalue="Go Test.go test cont/cmd/daemon" />
       <item itemvalue="Go Test.TestDynamicPipe_Read_SmallBuffer in cont/cmd/daemon" />
+      <item itemvalue="Go Test.TestDynamicPipe_Write in cont/cmd/daemon" />
+      <item itemvalue="Go Build.go build cont/cmd/multiplex" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Go Build.go build cont/cmd/daemon" />
+        <item itemvalue="Go Build.go build cont/cmd/multiplex" />
+        <item itemvalue="Go Test.TestDynamicPipe_Write in cont/cmd/daemon" />
         <item itemvalue="Go Test.go test cont/cmd/daemon" />
         <item itemvalue="Go Test.TestDynamicPipe_Read_SmallBuffer in cont/cmd/daemon" />
-        <item itemvalue="Go Test.TestDynamicPipe_Read_BigBuffer in cont/cmd/daemon" />
-        <item itemvalue="Go Test.TestDynamicReader_Read in cont/cmd/daemon" />
       </list>
     </recent_temporary>
   </component>
@@ -181,7 +185,8 @@
     <MESSAGE value="remote run WIP" />
     <MESSAGE value="remote stdin, stdout, stderr" />
     <MESSAGE value="cleanup, attach cmd" />
-    <option name="LAST_COMMIT_MESSAGE" value="cleanup, attach cmd" />
+    <MESSAGE value="debugging" />
+    <option name="LAST_COMMIT_MESSAGE" value="debugging" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -196,23 +201,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/multiplex/main.go</url>
-          <line>101</line>
+          <line>110</line>
           <option name="timeStamp" value="33" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/cmd/daemon/dynamic_pipe_test.go</url>
-          <line>30</line>
+          <line>31</line>
           <option name="timeStamp" value="34" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go</url>
-          <line>167</line>
-          <option name="timeStamp" value="41" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go</url>
-          <line>174</line>
-          <option name="timeStamp" value="42" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

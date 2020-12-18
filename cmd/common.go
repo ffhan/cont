@@ -9,7 +9,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"io"
 	"log"
@@ -83,32 +82,24 @@ func must(err error) {
 	}
 }
 
-func setupInteractive(cmd *cobra.Command, wg *sync.WaitGroup, stdin io.ReadWriteCloser) {
-	if isInteractive, err := cmd.Flags().GetBool("it"); err == nil && isInteractive {
-		wg.Add(1)
-		go func() {
-			handleStdin(stdin)
-			wg.Done()
-		}()
-	} else if err != nil {
-		panic(err)
-	}
+func setupInteractive(wg *sync.WaitGroup, stdin io.ReadWriteCloser) {
+	wg.Add(1)
+	go func() {
+		handleStdin(stdin)
+		wg.Done()
+	}()
 }
 
-func setupDetached(cmd *cobra.Command, wg *sync.WaitGroup, stdout, stderr io.ReadWriteCloser) {
-	if isDetached, err := cmd.Flags().GetBool("detached"); err == nil && !isDetached {
-		wg.Add(2)
-		go func() {
-			io.Copy(os.Stdout, stdout)
-			wg.Done()
-		}()
-		go func() {
-			io.Copy(os.Stderr, stderr)
-			wg.Done()
-		}()
-	} else if err != nil {
-		panic(err)
-	}
+func attachOutput(wg *sync.WaitGroup, stdout, stderr io.ReadWriteCloser) {
+	wg.Add(2)
+	go func() {
+		io.Copy(os.Stdout, stdout)
+		wg.Done()
+	}()
+	go func() {
+		io.Copy(os.Stderr, stderr)
+		wg.Done()
+	}()
 }
 
 func setupLocalPipes(containerID uuid.UUID, started chan bool) [3]*os.File {

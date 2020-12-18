@@ -67,7 +67,12 @@ var attachCmd = &cobra.Command{
 
 		// todo: cat java_error_in_idea_40817.log EOF, probably problem with packaging in mux & stream
 		// todo: attaching stdout doesn't work
-		setupInteractive(cmd, &wg, stdin)
+		attachOutput(&wg, stdout, stderr)
+		if isInteractive, err := cmd.Flags().GetBool("it"); err == nil && isInteractive {
+			setupInteractive(&wg, stdin)
+		} else {
+			must(err)
+		}
 		wg.Wait()
 	},
 }

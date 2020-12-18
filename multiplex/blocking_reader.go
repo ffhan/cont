@@ -8,7 +8,7 @@ type blockingReadWriteCloser struct {
 	writer io.WriteCloser
 }
 
-func newBlockingReader() *blockingReadWriteCloser {
+func NewBlockingReader() *blockingReadWriteCloser {
 	reader, writer := io.Pipe()
 	return &blockingReadWriteCloser{reader: reader, writer: writer}
 }

@@ -14,7 +14,7 @@ import (
 
 var mutex sync.Mutex
 
-func client() {
+func client(wg *sync.WaitGroup) {
 	multiplexClient := multiplex.NewClient()
 	multiplexClient.Name = "client"
 
@@ -28,6 +28,8 @@ func client() {
 
 	go func() {
 		s1 := mux.NewStream("1")
+		wg.Done()
+		wg.Wait()
 		if _, err := fmt.Fprintln(s1, "hello from session 1!"); err != nil {
 			panic(err)
 		}
@@ -49,6 +51,8 @@ func client() {
 		mux2 := multiplexClient.NewMux(conn)
 		mux2.Name = "mux2"
 		s22 := mux2.NewStream("2")
+		wg.Done()
+		wg.Wait()
 		if _, err := fmt.Fprintln(s22, "hello from session 2 - copy!"); err != nil {
 			panic(err)
 		}
@@ -64,6 +68,8 @@ func client() {
 
 	go func() {
 		s2 := mux.NewStream("2")
+		wg.Done()
+		wg.Wait()
 		if _, err := fmt.Fprintln(s2, "hello from session 2!"); err != nil {
 			panic(err)
 		}
@@ -92,7 +98,10 @@ func main() {
 		panic(err)
 	}
 
-	go client()
+	var wg sync.WaitGroup
+	wg.Add(5)
+
+	go client(&wg)
 
 	multiplexClient := multiplex.NewClient()
 	multiplexClient.Name = "server"
@@ -110,6 +119,8 @@ func main() {
 
 			process1 := mux.NewStream("1")
 			process2 := mux.NewStream("2")
+			wg.Done()
+			wg.Wait()
 
 			go func() {
 				if _, err := fmt.Fprintln(process1, strconv.Itoa(counter)+": example of process 1 writing"); err != nil {

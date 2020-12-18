@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"io"
+	"log"
 )
 
 // Stream is an individual data Stream, a part of a multiplexed Stream
@@ -16,7 +17,7 @@ type Stream struct {
 }
 
 func (s *Stream) String() string {
-	return fmt.Sprintf("Stream(client: %s, mux: %s, id: %s, input: %p, output: %p)", s.client.client.Name, s.client.Name, s.id, s.input, s.output)
+	return fmt.Sprintf("Stream(client: %s, mux: %s, id: %s, \n\tinput: %s, \n\toutput: %s)", s.client.client.Name, s.client.Name, s.id, s.input, s.output)
 }
 
 func (s *Stream) Read(p []byte) (n int, err error) {
@@ -40,6 +41,10 @@ func (s *Stream) Write(p []byte) (n int, err error) {
 	packet := payload[maxBuffer*idx : maxBuffer*(idx+1)]
 	for len(packet) > 0 {
 		_, err = s.output.Write(packet)
+		if err != nil {
+			log.Printf("cannot write to stream output: %v", err)
+			return 0, err
+		}
 		idx += 1
 		start := maxBuffer * idx
 		end := maxBuffer * (idx + 1)
