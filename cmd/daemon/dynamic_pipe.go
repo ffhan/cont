@@ -15,6 +15,22 @@ const (
 	ringPieceBuffer = totalBufferSize / ringParts
 )
 
+type waiter struct {
+	waitChan chan bool
+	expired  bool
+}
+
+func (w *waiter) Unlock() {
+	if !w.expired {
+		close(w.waitChan)
+		w.expired = true
+	}
+}
+
+func (w *waiter) Wait() {
+	<-w.waitChan
+}
+
 type dynamicPipe struct {
 	pipes      map[io.ReadWriteCloser]chan bool
 	ringBuffer *ring.Ring
@@ -23,22 +39,26 @@ type dynamicPipe struct {
 	readMutex  sync.RWMutex
 	gotData    chan bool
 	pipeMutex  sync.RWMutex
+	waiting    waiter
 }
 
 func NewDynamicPipe() *dynamicPipe {
 	ringBuf := ring.New(ringParts)
-	return &dynamicPipe{
+	d := &dynamicPipe{
 		pipes:      make(map[io.ReadWriteCloser]chan bool),
 		ringBuffer: ringBuf,
 		readRing:   ringBuf,
 		gotData:    make(chan bool, 1),
+		waiting:    waiter{make(chan bool), false},
 	}
+	return d
 }
 
 func (d *dynamicPipe) Add(rw io.ReadWriteCloser) {
 	d.pipeMutex.Lock()
 	defer d.pipeMutex.Unlock()
 	d.pipes[rw] = make(chan bool, 1)
+	d.waiting.Unlock()
 	go d.bgRead(rw)
 }
 
@@ -66,25 +86,28 @@ func (d *dynamicPipe) getPipe(r io.ReadWriteCloser) (chan bool, bool) {
 }
 
 func (d *dynamicPipe) bgRead(reader io.ReadWriteCloser) {
+	//log.Printf("bgReading %s", reader)
 	defer func() {
 		delete(d.pipes, reader)
-		fmt.Printf("bgRead removed %p\n", reader)
+		log.Printf("bgRead removed %p\n", reader)
 	}()
 	bytes := make([]byte, ringPieceBuffer)
 	for {
 		p, ok := d.getPipe(reader)
 		if !ok {
-			//log.Println("no pipe")
+			log.Println("no pipe")
 			return
 		} else {
 			select {
 			case <-p:
-				//log.Printf("pipe %p done\n", p)
+				log.Printf("pipe %p done\n", p)
 				return
 			case <-time.After(10 * time.Microsecond):
 			}
 		}
+		d.readMutex.Lock()
 		read, err := reader.Read(bytes)
+		d.readMutex.Unlock()
 		if err != nil {
 			log.Printf("cannot read from a pipe in dynamic pipe: %v", err)
 			return
@@ -95,6 +118,7 @@ func (d *dynamicPipe) bgRead(reader io.ReadWriteCloser) {
 		d.ringMutex.Lock()
 
 		d.ringBuffer.Value = result
+		//log.Printf("bg read %s: %s", string(result), reader)
 		d.ringBuffer = d.ringBuffer.Next()
 		select {
 		case d.gotData <- true:
@@ -133,6 +157,7 @@ func (d *dynamicPipe) nextWrite() {
 }
 
 func (d *dynamicPipe) Read(p []byte) (n int, err error) {
+	d.waiting.Wait()
 	for len(d.getPipes()) > 0 || d.getValue() != nil {
 		bytes := d.getValue()
 		if bytes == nil {
@@ -159,6 +184,7 @@ func (d *dynamicPipe) Read(p []byte) (n int, err error) {
 		}
 	}
 	if len(d.getPipes()) == 0 && d.getValue() == nil {
+		log.Printf("EOF read")
 		return 0, io.EOF // we have exhausted all pipes
 	}
 	return n, err

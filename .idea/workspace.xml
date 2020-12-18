@@ -4,17 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="debugging">
-      <change afterPath="$PROJECT_DIR$/attach_container.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/run_container.sh" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="working interactive output for attach">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/attach.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/attach.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/multiplex/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/multiplex/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/run.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplex/blocking_reader.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/blocking_reader.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplex/stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/stream.go" afterDir="false" />
@@ -143,10 +137,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Go Build.go build cont/cmd/daemon" />
-        <item itemvalue="Go Build.go build cont/cmd/multiplex" />
-        <item itemvalue="Go Test.TestDynamicPipe_Write in cont/cmd/daemon" />
-        <item itemvalue="Go Test.go test cont/cmd/daemon" />
         <item itemvalue="Go Test.TestDynamicPipe_Read_SmallBuffer in cont/cmd/daemon" />
+        <item itemvalue="Go Test.TestDynamicPipe_Write in cont/cmd/daemon" />
+        <item itemvalue="Go Build.go build cont/cmd/multiplex" />
+        <item itemvalue="Go Test.go test cont/cmd/daemon" />
       </list>
     </recent_temporary>
   </component>
@@ -186,7 +180,8 @@
     <MESSAGE value="remote stdin, stdout, stderr" />
     <MESSAGE value="cleanup, attach cmd" />
     <MESSAGE value="debugging" />
-    <option name="LAST_COMMIT_MESSAGE" value="debugging" />
+    <MESSAGE value="working interactive output for attach" />
+    <option name="LAST_COMMIT_MESSAGE" value="working interactive output for attach" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -208,6 +203,11 @@
           <url>file://$PROJECT_DIR$/cmd/daemon/dynamic_pipe_test.go</url>
           <line>31</line>
           <option name="timeStamp" value="34" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/multiplex/mux.go</url>
+          <line>83</line>
+          <option name="timeStamp" value="56" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

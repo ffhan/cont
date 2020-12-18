@@ -26,6 +26,7 @@ func (s *Stream) Read(p []byte) (n int, err error) {
 }
 
 func (s *Stream) Write(p []byte) (n int, err error) {
+	log.Printf("writing %s", string(p))
 	payload, err := proto.Marshal(&api.Packet{
 		Id:   s.id,
 		Data: p,
@@ -60,5 +61,6 @@ func (s *Stream) Write(p []byte) (n int, err error) {
 }
 
 func (s *Stream) Close() error {
+	log.Printf("closed stream %s", s)
 	return s.input.Close()
 }

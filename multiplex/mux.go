@@ -116,6 +116,7 @@ func (m *Mux) removeStream(stream *Stream) {
 
 // Closes a Stream and removes it from the Client and the Mux.
 func (m *Mux) closeStream(s *Stream) error {
+	log.Printf("closed stream %s", s)
 	m.removeStream(s)
 	m.client.removeStream(s.id, s)
 	return s.input.Close()
@@ -123,6 +124,7 @@ func (m *Mux) closeStream(s *Stream) error {
 
 // Closes a Mux and the streams it owns.
 func (m *Mux) Close() error {
+	log.Println("closed mux")
 	m.streamMutex.RLock()
 	defer m.streamMutex.RUnlock()
 	var resultErr error

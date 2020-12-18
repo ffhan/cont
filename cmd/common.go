@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bufio"
 	"cont"
 	"cont/api"
 	"cont/multiplex"
@@ -61,12 +60,7 @@ func handleEvents(client api.ApiClient, signals chan os.Signal, started chan boo
 }
 
 func handleStdin(stdinPipe io.WriteCloser) {
-	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		line := scanner.Text() + "\n"
-		_, err := stdinPipe.Write([]byte(line))
-		must(err)
-	}
+	go io.Copy(stdinPipe, os.Stdin)
 }
 
 func closePipes(stdin, stdout, stderr io.ReadWriteCloser) {

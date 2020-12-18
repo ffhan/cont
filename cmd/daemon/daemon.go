@@ -205,12 +205,12 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 		Data:    nil,
 	}
 
-	stdin := NewDynamicPipe()
-	stdin.Add(pipes[0])
+	stdin := NewDynamicPipe() // pipes have to exist currently because otherwise local running doesn't work
+	//stdin.Add(pipes[0])
 	stdout := NewDynamicPipe()
-	stdout.Add(pipes[1])
+	//stdout.Add(pipes[1])
 	stderr := NewDynamicPipe()
-	stderr.Add(pipes[2])
+	//stderr.Add(pipes[2])
 
 	defer stderr.Close()
 	defer stdout.Close()
