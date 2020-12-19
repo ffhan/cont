@@ -24,11 +24,12 @@ import (
 )
 
 type Container struct {
-	Cmd                   *exec.Cmd
-	Name                  string
-	Id                    uuid.UUID
-	Command               string
-	Stdin, Stdout, Stderr io.ReadWriteCloser
+	Cmd            *exec.Cmd
+	Name           string
+	Id             uuid.UUID
+	Command        string
+	Stdin          io.ReadCloser
+	Stdout, Stderr io.WriteCloser
 }
 
 type server struct {
@@ -218,12 +219,6 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 	//stderr := NewDynamicPipe()
 	//stderr.Add(pipes[2])
 
-	devnull, err := os.OpenFile(os.DevNull, os.O_RDWR, 0777)
-	if err != nil {
-		log.Printf("cannot open dev null device: %v", err)
-		return
-	}
-
 	sin, _, _ := s.ContainerStreamIDs(id)
 
 	stdout := multiplex.NewBlockingReader()
@@ -232,8 +227,7 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 	go io.Copy(os.Stdout, stdout)
 	go io.Copy(os.Stderr, stderr)
 
-	mux := s.muxClient.NewMux(devnull)
-	stdin := mux.NewStream(sin)
+	stdin := s.muxClient.NewReceiver(sin)
 
 	defer stderr.Close()
 	defer stdout.Close()

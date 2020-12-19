@@ -13,14 +13,14 @@ import (
 // Mux multiplexes a connection to a number of streams.
 // Every Mux handles only one connection.
 type Mux struct {
-	ownedStreams map[*Stream]bool
+	ownedStreams map[Streamer]bool
 	streamMutex  sync.RWMutex
 	client       *Client
 	Name         string
 	conn         io.ReadWriteCloser
 }
 
-func (m *Mux) GetOwnedStreams() map[*Stream]bool {
+func (m *Mux) GetOwnedStreams() map[Streamer]bool {
 	return m.ownedStreams
 }
 
@@ -78,10 +78,10 @@ func (m *Mux) readIncoming() {
 				go func() {
 					defer wg.Done()
 					log.Printf("mux sending %s to stream %s input", string(p.Data), stream)
-					if _, err := stream.input.Write(p.Data); err != nil {
+					if _, err := stream.WriteInput(p.Data); err != nil {
 						log.Printf("cannot write to Stream input: %v\n", err)
 						if err := m.closeStream(stream); err != nil { // close the Stream if write unsuccessful
-							m.logf("cannot close a Stream %s: %v", stream.id, err)
+							m.logf("cannot close a Stream %s: %v", stream.ID(), err)
 						}
 					} else {
 						log.Printf("%s sent to stream %s", string(p.Data), stream)
@@ -111,18 +111,18 @@ func (m *Mux) NewStream(id string) *Stream {
 }
 
 // Removes the Stream from the Mux, but doesn't close it. It also doesn't remove it from the Client.
-func (m *Mux) removeStream(stream *Stream) {
+func (m *Mux) removeStream(stream Streamer) {
 	m.streamMutex.Lock()
 	defer m.streamMutex.Unlock()
 	delete(m.ownedStreams, stream)
 }
 
 // Closes a Stream and removes it from the Client and the Mux.
-func (m *Mux) closeStream(s *Stream) error {
+func (m *Mux) closeStream(s Streamer) error {
 	log.Printf("closed stream %s", s)
 	m.removeStream(s)
-	m.client.removeStream(s.id, s)
-	return s.input.Close()
+	m.client.removeStream(s.ID(), s)
+	return s.Close()
 }
 
 // Closes a Mux and the streams it owns.

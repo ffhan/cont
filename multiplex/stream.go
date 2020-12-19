@@ -16,8 +16,12 @@ type Stream struct {
 	input  io.ReadWriteCloser // Stream input - receives data from Mux
 }
 
-func (s *Stream) String() string {
-	return fmt.Sprintf("Stream(client: %s, mux: %s, id: %s, \n\tinput: %s, \n\toutput: %s)", s.client.client.Name, s.client.Name, s.id, s.input, s.output)
+func (s *Stream) ID() string {
+	return s.id
+}
+
+func (s *Stream) WriteInput(bytes []byte) (n int, err error) {
+	return s.input.Write(bytes)
 }
 
 func (s *Stream) Read(p []byte) (n int, err error) {
@@ -59,6 +63,10 @@ func (s *Stream) Write(p []byte) (n int, err error) {
 		packet = payload[start:end]
 	}
 	return len(p), err
+}
+
+func (s *Stream) String() string {
+	return fmt.Sprintf("Stream(client: %s, mux: %s, id: %s, \n\tinput: %s, \n\toutput: %s)", s.client.client.Name, s.client.Name, s.id, s.input, s.output)
 }
 
 func (s *Stream) Close() error {
