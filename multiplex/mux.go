@@ -168,7 +168,7 @@ func (m *Mux) closeStream(s Streamer) error {
 }
 
 func (m *Mux) executeOnClose() {
-	log.Println("executing OnClose mux functions")
+	//log.Println("executing OnClose mux functions")
 	for _, f := range m.onClose {
 		f := f
 		go f(m)

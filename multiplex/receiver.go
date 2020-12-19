@@ -3,7 +3,6 @@ package multiplex
 import (
 	"fmt"
 	"io"
-	"log"
 )
 
 // Receiver can only receive data from other streams, it doesn't have it's own output connection.
@@ -19,7 +18,7 @@ func (r *Receiver) ID() string {
 
 func (r *Receiver) Read(p []byte) (n int, err error) {
 	n, err = r.input.Read(p)
-	log.Printf("receiver %s reading %s", r.id, string(p[:n]))
+	//log.Printf("receiver %s reading %s", r.id, string(p[:n]))
 	return n, err
 }
 
@@ -32,7 +31,7 @@ func (r *Receiver) String() string {
 }
 
 func (r *Receiver) Close() error {
-	log.Printf("closed receiver %s", r)
+	//log.Printf("closed receiver %s", r)
 	r.client.removeStream(r.id, r)
 	return r.input.Close()
 }

@@ -32,7 +32,7 @@ func (s *server) acceptStreamConnections(listener net.Listener) {
 			mux:  mux,
 		}
 		mux.AddOnClose(func(mux *multiplex.Mux) {
-			log.Println("removing mux connection")
+			log.Printf("removing mux connection \"%s\"", mux.Name)
 			s.connectionsMutex.Lock()
 			defer s.connectionsMutex.Unlock()
 			delete(s.connections, clientID)

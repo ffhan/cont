@@ -4,8 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="daemon cleanup">
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="daemon fixed NewServer">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daemon/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daemon/streaming.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/streaming.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/receiver.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/receiver.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,7 +160,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="event stream" />
     <MESSAGE value="usage gif" />
     <MESSAGE value="multiplexing a tcp connection POC" />
     <MESSAGE value="cleaned up main" />
@@ -180,7 +184,8 @@
     <MESSAGE value="refactoring" />
     <MESSAGE value="cleanup" />
     <MESSAGE value="daemon cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="daemon cleanup" />
+    <MESSAGE value="daemon fixed NewServer" />
+    <option name="LAST_COMMIT_MESSAGE" value="daemon fixed NewServer" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

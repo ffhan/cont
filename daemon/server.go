@@ -5,13 +5,11 @@ import (
 	"cont/multiplex"
 	"context"
 	"errors"
-	"fmt"
 	"github.com/google/uuid"
 	"io"
 	"net"
 	"os/exec"
 	"sync"
-	"time"
 )
 
 type Container struct {
@@ -54,14 +52,6 @@ func NewServer(muxClient *multiplex.Client, connectionListener net.Listener) (*s
 		events:           make(map[uuid.UUID]chan *api.Event),
 	}
 	go s.acceptStreamConnections(connectionListener)
-
-	go func() {
-		ticker := time.NewTicker(5 * time.Second)
-		defer ticker.Stop()
-		for range ticker.C {
-			fmt.Println(s.connections)
-		}
-	}()
 
 	return s, nil
 }

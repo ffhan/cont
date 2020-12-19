@@ -44,7 +44,7 @@ Daemon: `go run cmd/daemon/daemon.go`
 
 * [ ] signalling container kill (reuse gRPC kill)
 * [x] attach to a container
-* [ ] clean up multiplex module & dynamic pipe
+* [ ] clean up multiplex module
 * [ ] clean up daemon & CLI codebase
 * [x] dropped connection/stream detection & cleanup
 
