@@ -4,15 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="cleanup implemented">
-      <change afterPath="$PROJECT_DIR$/cmd/daemon/events.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/daemon/kill.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/daemon/ps.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/daemon/run.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/daemon/server.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cmd/daemon/streaming.go" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/events.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/events.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/kill.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/kill.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/ps.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/ps.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/run.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +159,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="currently running data" />
     <MESSAGE value="ps active processes" />
     <MESSAGE value="kill active processes" />
     <MESSAGE value="event stream" />
@@ -187,7 +183,8 @@
     <MESSAGE value="kill debugging, attaching, pipe cleanup" />
     <MESSAGE value="README update" />
     <MESSAGE value="cleanup implemented" />
-    <option name="LAST_COMMIT_MESSAGE" value="cleanup implemented" />
+    <MESSAGE value="refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactoring" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

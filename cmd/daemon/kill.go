@@ -23,18 +23,25 @@ func (s *server) Kill(ctx context.Context, killCommand *api.KillCommand) (*api.C
 		return nil, errors.New("cannot find container events")
 	}
 
+	s.killContainer(c, eventChan, killCommand.Id)
+
+	return &api.ContainerResponse{Uuid: killCommand.Id}, nil
+}
+
+func (s *server) killContainer(c *Container, eventChan chan *api.Event, containerID []byte) {
+	// close all container streams
 	_ = c.Stdin.Close()
 	_ = c.Stdout.Close()
 	_ = c.Stderr.Close()
+	// kill the container with context cancellation
 	c.cancel()
 
-	s.sendEvent(eventChan, &api.Event{
-		Id:      killCommand.Id,
+	// send the event that the container has been killed
+	s.sendEvent(eventChan, &api.Event{ // todo: stream the event to all attached clients
+		Id:      containerID,
 		Type:    cmd.Killed,
 		Message: "",
 		Source:  "",
 		Data:    nil,
 	})
-
-	return &api.ContainerResponse{Uuid: killCommand.Id}, nil
 }

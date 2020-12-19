@@ -2,7 +2,7 @@ package main
 
 import (
 	"cont/api"
-	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"time"
 )
@@ -20,18 +20,8 @@ func (s *server) Events(request *api.EventStreamRequest, eventsServer api.Api_Ev
 		return err
 	}
 	eventChan, ok := events[id] // retry finding events
-	found := false
-	for i := 0; i < 100; i++ {
-		if !ok {
-			time.Sleep(10 * time.Millisecond)
-			eventChan, ok = events[id]
-			continue
-		}
-		found = true
-		break
-	}
-	if !found {
-		return errors.New("couldn't fetch events")
+	if !ok {
+		return fmt.Errorf("no currently running container for ID: %v", id.String())
 	}
 	for event := range eventChan {
 		if err := eventsServer.Send(event); err != nil {

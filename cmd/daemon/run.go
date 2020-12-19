@@ -4,8 +4,8 @@ import (
 	"cont/api"
 	"cont/cmd"
 	"cont/container"
+	"cont/multiplex"
 	"context"
-	"fmt"
 	"github.com/google/uuid"
 	"log"
 	"strings"
@@ -23,19 +23,12 @@ func (s *server) Run(ctx context.Context, request *api.ContainerRequest) (*api.C
 }
 
 func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
-	eventChan := make(chan *api.Event)
-	events[id] = eventChan
+	eventChan := s.createEventChan(id)
 
 	binaryId, err := id.MarshalBinary()
 	if err != nil {
-		log.Println(err)
-		s.sendEvent(eventChan, &api.Event{
-			Id:      nil,
-			Type:    cmd.Failed,
-			Message: id.String(),
-			Source:  "",
-			Data:    nil,
-		})
+		log.Printf("cannot marshal UUID to binary: %v", err)
+		s.sendFailedEvent(eventChan, id, err)
 		return
 	}
 
@@ -48,22 +41,14 @@ func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 	})
 
 	sin, sout, serr := s.ContainerStreamIDs(id)
+	stdin, stdout, stderr := s.setupStd(sin, sout, serr)
 
-	stdin := s.muxClient.NewReceiver(sin)
-	stdout := s.muxClient.NewSender(sout)
-	stderr := s.muxClient.NewSender(serr)
-
-	defer stderr.Close()
-	defer stdout.Close()
-	defer stdin.Close()
+	defer s.closeStd(stdin, id, stdout, stderr)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	defer func() {
-		close(eventChan)
-		delete(events, id)
-	}()
+	defer s.closeEventChan(eventChan, id)
 
 	containerCommand, err := container.Start(ctx, &container.Config{
 		Stdin:    stdin,
@@ -76,6 +61,7 @@ func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 	})
 	if err != nil {
 		log.Printf("container start error: %v\n", err)
+		s.sendFailedEvent(eventChan, id, err)
 		return
 	}
 	s.sendEvent(eventChan, &api.Event{
@@ -85,10 +71,9 @@ func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 		Source:  "", // todo: fill source
 		Data:    nil,
 	})
-	fmt.Printf("container %s started\n", id.String())
+	log.Printf("container %s started\n", id.String())
 
-	mutex.Lock()
-	currentlyRunning[id] = &Container{
+	newContainer := &Container{
 		Cmd:     containerCommand,
 		Name:    request.Name,
 		Id:      id,
@@ -98,19 +83,15 @@ func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 		Stderr:  stderr,
 		cancel:  cancel,
 	}
-	mutex.Unlock()
+	s.addContainer(newContainer)
+	defer s.removeContainer(id)
 
-	defer func() {
-		mutex.Lock()
-		defer mutex.Unlock()
-		delete(currentlyRunning, id)
-	}()
-	if err = containerCommand.Wait(); err != nil { // fixme: this hangs if process has been killed directly!
+	if err = containerCommand.Wait(); err != nil {
 		log.Printf("wait error (container is dead): %v\n", err)
 		log.Printf("container %s killed \n", id.String())
 		return
 	}
-	fmt.Println("sending done event")
+	log.Println("sending done event")
 	s.sendEvent(eventChan, &api.Event{
 		Id:      binaryId,
 		Type:    cmd.Done,
@@ -119,4 +100,56 @@ func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 		Data:    nil,
 	})
 	log.Printf("container %s done\n", id.String())
+}
+
+func (s *server) createEventChan(id uuid.UUID) chan *api.Event {
+	eventChan := make(chan *api.Event)
+	events[id] = eventChan
+	return eventChan
+}
+
+func (s *server) closeEventChan(eventChan chan *api.Event, id uuid.UUID) {
+	close(eventChan)
+	delete(events, id)
+}
+
+func (s *server) sendFailedEvent(eventChan chan *api.Event, id uuid.UUID, err error) {
+	s.sendEvent(eventChan, &api.Event{
+		Id:      nil,
+		Type:    cmd.Failed,
+		Message: id.String(),
+		Source:  "",
+		Data:    []byte(err.Error()),
+	})
+}
+
+func (s *server) removeContainer(id uuid.UUID) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	delete(currentlyRunning, id)
+}
+
+func (s *server) addContainer(newContainer *Container) {
+	mutex.Lock()
+	currentlyRunning[newContainer.Id] = newContainer
+	mutex.Unlock()
+}
+
+func (s *server) setupStd(sin string, sout string, serr string) (*multiplex.Receiver, *multiplex.Sender, *multiplex.Sender) {
+	stdin := s.muxClient.NewReceiver(sin)
+	stdout := s.muxClient.NewSender(sout)
+	stderr := s.muxClient.NewSender(serr)
+	return stdin, stdout, stderr
+}
+
+func (s *server) closeStd(stdin *multiplex.Receiver, id uuid.UUID, stdout *multiplex.Sender, stderr *multiplex.Sender) {
+	if err := stdin.Close(); err != nil {
+		log.Printf("cannot close stdin for container %s: %v", id.String(), err)
+	}
+	if err := stdout.Close(); err != nil {
+		log.Printf("cannot close stdout for container %s: %v", id.String(), err)
+	}
+	if err := stderr.Close(); err != nil {
+		log.Printf("cannot close stderr for container %s: %v", id.String(), err)
+	}
 }
