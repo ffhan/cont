@@ -2,7 +2,6 @@ package multiplex
 
 import (
 	"io"
-	"log"
 )
 
 // io.ReadWriteCloser that blocks read until there's data to read
@@ -25,7 +24,7 @@ func (b *blockingReadWriteCloser) Write(p []byte) (n int, err error) {
 }
 
 func (b *blockingReadWriteCloser) Close() error {
-	log.Println("closed blockingReadWriteCloser")
+	//log.Println("closed blockingReadWriteCloser")
 	err := b.writer.Close()
 	err2 := b.reader.Close()
 	if err != nil {

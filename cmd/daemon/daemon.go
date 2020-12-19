@@ -89,17 +89,17 @@ func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
 			return err
 		}
 		fmt.Println("received a stream request")
-		clientID, err := uuid.FromBytes(recv.ClientId)
-		if err != nil {
-			return err
-		}
+		//clientID, err := uuid.FromBytes(recv.ClientId)
+		//if err != nil {
+		//	return err
+		//}
 
-		s.connectionsMutex.RLock()
-		conn, ok := s.connections[clientID]
-		s.connectionsMutex.RUnlock()
-		if !ok {
-			return fmt.Errorf("no connection for the client ID %s", clientID.String())
-		}
+		//s.connectionsMutex.RLock()
+		//conn, ok := s.connections[clientID]
+		//s.connectionsMutex.RUnlock()
+		//if !ok {
+		//	return fmt.Errorf("no connection for the client ID %s", clientID.String())
+		//}
 
 		containerId, err := uuid.FromBytes(recv.Id)
 		if err != nil {
@@ -126,11 +126,12 @@ func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
 		fmt.Println(stdinId, stdoutId, stderrId)
 
 		// create streams
-		_ = conn.mux.NewStream(stdinId)
-		_ = conn.mux.NewStream(stdoutId)
-		_ = conn.mux.NewStream(stderrId)
+		//r := s.muxClient.NewReceiver(stdinId)
+		//go io.Copy(os.Stdout, r)
+		//_ = conn.mux.NewStream(stdoutId)
+		//_ = conn.mux.NewStream(stderrId)
 
-		fmt.Println("created new streams")
+		//fmt.Println("created new streams")
 		// fixme: go run cmd/cli/cli.go run --host 127.0.0.1 --workdir /home/fhancic --hostname test2 ./skripta.sh
 		// remote continuous stdout works (at least for 1 client)
 		// todo: what about removing streams?
@@ -138,7 +139,7 @@ func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
 		//cont.Stdout.Add(outStream)
 		//cont.Stderr.Add(errStream)
 
-		fmt.Printf("attached remote streams to container %s\n", containerId.String())
+		//fmt.Printf("attached remote streams to container %s\n", containerId.String())
 	}
 }
 
@@ -219,15 +220,11 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 	//stderr := NewDynamicPipe()
 	//stderr.Add(pipes[2])
 
-	sin, _, _ := s.ContainerStreamIDs(id)
-
-	stdout := multiplex.NewBlockingReader()
-	stderr := multiplex.NewBlockingReader()
-
-	go io.Copy(os.Stdout, stdout)
-	go io.Copy(os.Stderr, stderr)
+	sin, sout, serr := s.ContainerStreamIDs(id)
 
 	stdin := s.muxClient.NewReceiver(sin)
+	stdout := s.muxClient.NewSender(sout)
+	stderr := s.muxClient.NewSender(serr)
 
 	defer stderr.Close()
 	defer stdout.Close()

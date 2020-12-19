@@ -3,7 +3,6 @@ package multiplex
 import (
 	"cont/api"
 	"errors"
-	"fmt"
 	"github.com/golang/protobuf/proto"
 	"io"
 	"log"
@@ -34,7 +33,7 @@ const maxBuffer = 32768
 func (m *Mux) readIncoming() {
 	buffer := make([]byte, maxBuffer)
 	for {
-		fmt.Println("starting reading in mux")
+		//fmt.Println("starting reading in mux")
 		read, err := m.conn.Read(buffer)
 		data := buffer[:read]
 		if err != nil {
@@ -66,7 +65,7 @@ func (m *Mux) readIncoming() {
 		}
 		for i := len(results) - 1; i >= 0; i-- { // write data in reverse to appropriate streams
 			p := results[i]
-			log.Println(m.Name, p.Id, string(p.Data))
+			//log.Println(m.Name, p.Id, string(p.Data))
 
 			streams := m.client.getStreams(p.Id)
 			var wg sync.WaitGroup
@@ -77,14 +76,14 @@ func (m *Mux) readIncoming() {
 				stream := stream
 				go func() {
 					defer wg.Done()
-					log.Printf("mux sending %s to stream %s input", string(p.Data), stream)
+					//log.Printf("mux sending %s to stream %s input", string(p.Data), stream)
 					if _, err := stream.WriteInput(p.Data); err != nil {
 						log.Printf("cannot write to Stream input: %v\n", err)
 						if err := m.closeStream(stream); err != nil { // close the Stream if write unsuccessful
 							m.logf("cannot close a Stream %s: %v", stream.ID(), err)
 						}
-					} else {
-						log.Printf("%s sent to stream %s", string(p.Data), stream)
+						//} else {
+						//log.Printf("%s sent to stream %s", string(p.Data), stream)
 					}
 				}()
 			}
@@ -93,12 +92,47 @@ func (m *Mux) readIncoming() {
 	}
 }
 
+func (m *Mux) write(id string, p []byte) (n int, err error) {
+	//log.Printf("stream %s writing %s", id, string(p))
+	payload, err := proto.Marshal(&api.Packet{
+		Id:   id,
+		Data: p,
+	})
+	if err != nil {
+		return 0, err
+	}
+	idx := 0
+	if len(payload) <= maxBuffer {
+		_, err := m.conn.Write(payload)
+		return len(p), err
+	}
+	packet := payload[maxBuffer*idx : maxBuffer*(idx+1)]
+	for len(packet) > 0 {
+		_, err = m.conn.Write(packet)
+		if err != nil {
+			log.Printf("cannot write to stream output: %v", err)
+			return 0, err
+		}
+		idx += 1
+		start := maxBuffer * idx
+		end := maxBuffer * (idx + 1)
+		if start >= len(payload) {
+			break
+		}
+		if end >= len(payload) {
+			end = len(payload) - 1
+		}
+		packet = payload[start:end]
+	}
+	return len(p), err
+}
+
 // Creates a new Stream for the connection.
 // All incoming packets for the id will be passed to this Stream.
 func (m *Mux) NewStream(id string) *Stream {
 	//m.logf("created a new Stream %s", id)
 	str := &Stream{
-		client: m,
+		mux:    m,
 		id:     id,
 		output: m.conn,
 		input:  NewBlockingReader(), // we used a byte buffer here before, but it's a non blocking read which doesn't suit us
@@ -127,9 +161,12 @@ func (m *Mux) closeStream(s Streamer) error {
 
 // Closes a Mux and the streams it owns.
 func (m *Mux) Close() error {
-	log.Println("closed mux")
+	//log.Println("closed mux")
 	m.streamMutex.RLock()
 	defer m.streamMutex.RUnlock()
+	m.client.muxMutex.Lock()
+	defer m.client.muxMutex.Unlock()
+	delete(m.client.muxes, m)
 	var resultErr error
 	for s := range m.ownedStreams {
 		if err := m.closeStream(s); err != nil {

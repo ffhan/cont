@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-// Receiver is an individual data stream that only supports reading
+// Receiver can only receive data from other streams, it doesn't have it's own output connection.
 type Receiver struct {
 	client *Client            // Client responsible for this Receiver
 	id     string             // Receiver ID

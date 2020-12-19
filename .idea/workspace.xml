@@ -4,12 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="getting rid of dynamic pipes">
-      <change afterPath="$PROJECT_DIR$/multiplex/receiver.go" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="multiplex receiver">
+      <change afterPath="$PROJECT_DIR$/multiplex/sender.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/blocking_reader.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/blocking_reader.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplex/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/client.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/receiver.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/receiver.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplex/stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/stream.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -181,7 +183,8 @@
     <MESSAGE value="debugging" />
     <MESSAGE value="working interactive output for attach" />
     <MESSAGE value="getting rid of dynamic pipes" />
-    <option name="LAST_COMMIT_MESSAGE" value="getting rid of dynamic pipes" />
+    <MESSAGE value="multiplex receiver" />
+    <option name="LAST_COMMIT_MESSAGE" value="multiplex receiver" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -206,7 +209,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/multiplex/mux.go</url>
-          <line>86</line>
+          <line>85</line>
           <option name="timeStamp" value="56" />
         </line-breakpoint>
       </breakpoints>
