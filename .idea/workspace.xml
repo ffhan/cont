@@ -4,14 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="README update">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="cleanup implemented">
+      <change afterPath="$PROJECT_DIR$/cmd/daemon/events.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/daemon/kill.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/daemon/ps.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/daemon/run.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/daemon/server.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/daemon/streaming.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/receiver.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/receiver.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/stream.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,11 +59,11 @@
   </component>
   <component name="RecentsManager">
     <key name="GoMoveDeclarationDialog.RECENT_KEY">
+      <recent name="$PROJECT_DIR$/cmd/daemon" />
       <recent name="$PROJECT_DIR$/cmd" />
       <recent name="$PROJECT_DIR$/multiplex" />
       <recent name="$PROJECT_DIR$/cmd/socket_test" />
       <recent name="$PROJECT_DIR$/container" />
-      <recent name="$PROJECT_DIR$" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -161,7 +162,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="detached, interactive flags" />
     <MESSAGE value="currently running data" />
     <MESSAGE value="ps active processes" />
     <MESSAGE value="kill active processes" />
@@ -186,7 +186,8 @@
     <MESSAGE value="removed dynamic pipes, pipes (local runtime won't work)" />
     <MESSAGE value="kill debugging, attaching, pipe cleanup" />
     <MESSAGE value="README update" />
-    <option name="LAST_COMMIT_MESSAGE" value="README update" />
+    <MESSAGE value="cleanup implemented" />
+    <option name="LAST_COMMIT_MESSAGE" value="cleanup implemented" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
