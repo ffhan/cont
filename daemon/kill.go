@@ -1,4 +1,4 @@
-package main
+package daemon
 
 import (
 	"cont/api"
@@ -13,12 +13,12 @@ func (s *server) Kill(ctx context.Context, killCommand *api.KillCommand) (*api.C
 	if err != nil {
 		return nil, err
 	}
-	c, ok := currentlyRunning[id]
+	c, ok := s.getContainer(id)
 	if !ok {
 		return nil, errors.New("container doesn't exist")
 	}
 
-	eventChan, ok := events[id]
+	eventChan, ok := s.getEventChan(id)
 	if !ok {
 		return nil, errors.New("cannot find container events")
 	}

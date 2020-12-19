@@ -1,4 +1,4 @@
-package main
+package daemon
 
 import (
 	"cont/api"
@@ -12,10 +12,10 @@ func (s *server) Ps(ctx context.Context, empty *api.Empty) (*api.ActiveProcesses
 }
 
 func (s *server) listProcesses() []*api.Process {
-	processes := make([]*api.Process, 0, len(currentlyRunning))
-	for id, c := range currentlyRunning {
+	processes := make([]*api.Process, 0, len(s.currentlyRunning))
+	for _, c := range s.getCurrentlyRunning() {
 		processes = append(processes, &api.Process{
-			Id:   id.String(),
+			Id:   c.Id.String(),
 			Name: c.Name,
 			Cmd:  c.Command,
 			Pid:  int64(c.Cmd.Process.Pid),

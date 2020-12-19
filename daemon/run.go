@@ -1,4 +1,4 @@
-package main
+package daemon
 
 import (
 	"cont/api"
@@ -24,6 +24,7 @@ func (s *server) Run(ctx context.Context, request *api.ContainerRequest) (*api.C
 
 func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 	eventChan := s.createEventChan(id)
+	defer s.closeEventChan(eventChan, id)
 
 	binaryId, err := id.MarshalBinary()
 	if err != nil {
@@ -47,8 +48,6 @@ func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
-	defer s.closeEventChan(eventChan, id)
 
 	containerCommand, err := container.Start(ctx, &container.Config{
 		Stdin:    stdin,
@@ -102,37 +101,37 @@ func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 	log.Printf("container %s done\n", id.String())
 }
 
-func (s *server) createEventChan(id uuid.UUID) chan *api.Event {
-	eventChan := make(chan *api.Event)
-	events[id] = eventChan
-	return eventChan
-}
-
-func (s *server) closeEventChan(eventChan chan *api.Event, id uuid.UUID) {
-	close(eventChan)
-	delete(events, id)
-}
-
-func (s *server) sendFailedEvent(eventChan chan *api.Event, id uuid.UUID, err error) {
-	s.sendEvent(eventChan, &api.Event{
-		Id:      nil,
-		Type:    cmd.Failed,
-		Message: id.String(),
-		Source:  "",
-		Data:    []byte(err.Error()),
-	})
-}
-
 func (s *server) removeContainer(id uuid.UUID) {
-	mutex.Lock()
-	defer mutex.Unlock()
-	delete(currentlyRunning, id)
+	s.currentlyRunningMutex.Lock()
+	defer s.currentlyRunningMutex.Unlock()
+
+	delete(s.currentlyRunning, id)
 }
 
 func (s *server) addContainer(newContainer *Container) {
-	mutex.Lock()
-	currentlyRunning[newContainer.Id] = newContainer
-	mutex.Unlock()
+	s.currentlyRunningMutex.Lock()
+	defer s.currentlyRunningMutex.Unlock()
+
+	s.currentlyRunning[newContainer.Id] = newContainer
+}
+
+func (s *server) getContainer(id uuid.UUID) (*Container, bool) {
+	s.currentlyRunningMutex.RLock()
+	defer s.currentlyRunningMutex.RUnlock()
+
+	c, ok := s.currentlyRunning[id]
+	return c, ok
+}
+
+func (s *server) getCurrentlyRunning() []*Container {
+	s.currentlyRunningMutex.RLock()
+	s.currentlyRunningMutex.RUnlock()
+
+	containers := make([]*Container, 0, len(s.currentlyRunning))
+	for _, c := range s.currentlyRunning {
+		containers = append(containers, c)
+	}
+	return containers
 }
 
 func (s *server) setupStd(sin string, sout string, serr string) (*multiplex.Receiver, *multiplex.Sender, *multiplex.Sender) {

@@ -4,12 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="refactoring">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="cleanup">
+      <change afterPath="$PROJECT_DIR$/daemon/events.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/events.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/events.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/kill.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/kill.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/ps.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/ps.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/events.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/kill.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/kill.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/ps.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/ps.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/streaming.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/streaming.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,11 +70,11 @@
       <recent name="$PROJECT_DIR$/multiplex" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/daemon" />
       <recent name="$PROJECT_DIR$/assets" />
       <recent name="$PROJECT_DIR$/cmd/multiplex" />
       <recent name="$PROJECT_DIR$/cmd/socket_test/server" />
       <recent name="$PROJECT_DIR$/cmd/cli" />
-      <recent name="$PROJECT_DIR$/container" />
     </key>
   </component>
   <component name="RunManager" selected="Go Build.go build cont/cmd/daemon">
@@ -159,7 +162,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="ps active processes" />
     <MESSAGE value="kill active processes" />
     <MESSAGE value="event stream" />
     <MESSAGE value="usage gif" />
@@ -184,7 +186,8 @@
     <MESSAGE value="README update" />
     <MESSAGE value="cleanup implemented" />
     <MESSAGE value="refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactoring" />
+    <MESSAGE value="cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="cleanup" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

@@ -1,4 +1,4 @@
-package main
+package daemon
 
 import (
 	"cont/api"
@@ -26,21 +26,19 @@ type Container struct {
 
 type server struct {
 	api.UnimplementedApiServer
-	muxClient        *multiplex.Client
-	connections      map[uuid.UUID]*streamConn
-	connectionsMutex sync.RWMutex
+	muxClient             *multiplex.Client
+	connections           map[uuid.UUID]*streamConn
+	currentlyRunning      map[uuid.UUID]*Container
+	events                map[uuid.UUID]chan *api.Event
+	connectionsMutex      sync.RWMutex
+	currentlyRunningMutex sync.RWMutex
+	eventMutex            sync.RWMutex
 }
 
 type streamConn struct {
 	net.Conn
 	mux *multiplex.Mux
 }
-
-var (
-	currentlyRunning = make(map[uuid.UUID]*Container) // todo: transfer to a server struct
-	events           = make(map[uuid.UUID]chan *api.Event)
-	mutex            sync.Mutex
-)
 
 func NewServer(muxClient *multiplex.Client, connectionListener net.Listener) (*server, error) {
 	if muxClient == nil {
@@ -49,7 +47,12 @@ func NewServer(muxClient *multiplex.Client, connectionListener net.Listener) (*s
 	if connectionListener == nil {
 		return nil, errors.New("connectionListener is nil")
 	}
-	s := &server{muxClient: muxClient, connections: make(map[uuid.UUID]*streamConn)}
+	s := &server{
+		muxClient:        muxClient,
+		connections:      make(map[uuid.UUID]*streamConn),
+		currentlyRunning: make(map[uuid.UUID]*Container),
+		events:           make(map[uuid.UUID]chan *api.Event),
+	}
 	go s.acceptStreamConnections(connectionListener)
 
 	go func() {
