@@ -3,6 +3,7 @@ package multiplex
 import (
 	"cont/api"
 	"errors"
+	"fmt"
 	"github.com/golang/protobuf/proto"
 	"io"
 	"log"
@@ -33,6 +34,7 @@ const maxBuffer = 32768
 func (m *Mux) readIncoming() {
 	buffer := make([]byte, maxBuffer)
 	for {
+		fmt.Println("starting reading in mux")
 		read, err := m.conn.Read(buffer)
 		data := buffer[:read]
 		if err != nil {
@@ -64,7 +66,7 @@ func (m *Mux) readIncoming() {
 		}
 		for i := len(results) - 1; i >= 0; i-- { // write data in reverse to appropriate streams
 			p := results[i]
-			//log.Println(m.Name, p.Id, string(p.Data))
+			log.Println(m.Name, p.Id, string(p.Data))
 
 			streams := m.client.getStreams(p.Id)
 			var wg sync.WaitGroup
@@ -75,13 +77,14 @@ func (m *Mux) readIncoming() {
 				stream := stream
 				go func() {
 					defer wg.Done()
+					log.Printf("mux sending %s to stream %s input", string(p.Data), stream)
 					if _, err := stream.input.Write(p.Data); err != nil {
 						log.Printf("cannot write to Stream input: %v\n", err)
 						if err := m.closeStream(stream); err != nil { // close the Stream if write unsuccessful
 							m.logf("cannot close a Stream %s: %v", stream.id, err)
 						}
-						//} else {
-						//	log.Printf("%s sent to stream %s", string(p.Data), stream)
+					} else {
+						log.Printf("%s sent to stream %s", string(p.Data), stream)
 					}
 				}()
 			}

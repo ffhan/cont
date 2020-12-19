@@ -22,11 +22,12 @@ func (s *Stream) String() string {
 
 func (s *Stream) Read(p []byte) (n int, err error) {
 	n, err = s.input.Read(p)
+	log.Printf("stream %s reading %s", s.id, string(p[:n]))
 	return n, err
 }
 
 func (s *Stream) Write(p []byte) (n int, err error) {
-	log.Printf("writing %s", string(p))
+	log.Printf("stream %s writing %s", s.id, string(p))
 	payload, err := proto.Marshal(&api.Packet{
 		Id:   s.id,
 		Data: p,

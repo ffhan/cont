@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -27,7 +28,7 @@ type Container struct {
 	Name                  string
 	Id                    uuid.UUID
 	Command               string
-	Stdin, Stdout, Stderr *dynamicPipe
+	Stdin, Stdout, Stderr io.ReadWriteCloser
 }
 
 type server struct {
@@ -104,17 +105,14 @@ func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
 			return err
 		}
 
-		mutex.Lock()
-		cont, ok := currentlyRunning[containerId]
-		if !ok {
-			return fmt.Errorf("no currently running container %s", containerId.String())
-		}
-		mutex.Unlock()
+		//mutex.Lock()
+		//cont, ok := currentlyRunning[containerId]
+		//if !ok {
+		//	return fmt.Errorf("no currently running container %s", containerId.String())
+		//}
+		//mutex.Unlock()
 
-		cIDString := containerId.String()
-		stdinId := cIDString + "-0"
-		stdoutId := cIDString + "-1"
-		stderrId := cIDString + "-2"
+		stdinId, stdoutId, stderrId := s.ContainerStreamIDs(containerId)
 
 		if err = streamServer.Send(&api.StreamResponse{
 			InId:  stdinId,
@@ -127,20 +125,28 @@ func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
 		fmt.Println(stdinId, stdoutId, stderrId)
 
 		// create streams
-		inStream := conn.mux.NewStream(stdinId)
-		outStream := conn.mux.NewStream(stdoutId)
-		errStream := conn.mux.NewStream(stderrId)
+		_ = conn.mux.NewStream(stdinId)
+		_ = conn.mux.NewStream(stdoutId)
+		_ = conn.mux.NewStream(stderrId)
 
 		fmt.Println("created new streams")
 		// fixme: go run cmd/cli/cli.go run --host 127.0.0.1 --workdir /home/fhancic --hostname test2 ./skripta.sh
 		// remote continuous stdout works (at least for 1 client)
 		// todo: what about removing streams?
-		cont.Stdin.Add(inStream)
-		cont.Stdout.Add(outStream)
-		cont.Stderr.Add(errStream)
+		//cont.Stdin.Add(inStream)
+		//cont.Stdout.Add(outStream)
+		//cont.Stderr.Add(errStream)
 
 		fmt.Printf("attached remote streams to container %s\n", containerId.String())
 	}
+}
+
+func (s *server) ContainerStreamIDs(containerId uuid.UUID) (string, string, string) {
+	cIDString := containerId.String()
+	stdinId := cIDString + "-0"
+	stdoutId := cIDString + "-1"
+	stderrId := cIDString + "-2"
+	return stdinId, stdoutId, stderrId
 }
 
 var (
@@ -205,12 +211,29 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 		Data:    nil,
 	}
 
-	stdin := NewDynamicPipe() // pipes have to exist currently because otherwise local running doesn't work
+	//stdin := NewDynamicPipe() // pipes have to exist currently because otherwise local running doesn't work
 	//stdin.Add(pipes[0])
-	stdout := NewDynamicPipe()
+	//stdout := NewDynamicPipe()
 	//stdout.Add(pipes[1])
-	stderr := NewDynamicPipe()
+	//stderr := NewDynamicPipe()
 	//stderr.Add(pipes[2])
+
+	devnull, err := os.OpenFile(os.DevNull, os.O_RDWR, 0777)
+	if err != nil {
+		log.Printf("cannot open dev null device: %v", err)
+		return
+	}
+
+	sin, _, _ := s.ContainerStreamIDs(id)
+
+	stdout := multiplex.NewBlockingReader()
+	stderr := multiplex.NewBlockingReader()
+
+	go io.Copy(os.Stdout, stdout)
+	go io.Copy(os.Stderr, stderr)
+
+	mux := s.muxClient.NewMux(devnull)
+	stdin := mux.NewStream(sin)
 
 	defer stderr.Close()
 	defer stdout.Close()

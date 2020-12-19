@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="working interactive output for attach">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="awful awful bugs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/blocking_reader.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/blocking_reader.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multiplex/stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/stream.go" afterDir="false" />
     </list>
@@ -129,10 +126,10 @@
     </configuration>
     <list>
       <item itemvalue="Go Build.go build cont/cmd/daemon" />
+      <item itemvalue="Go Build.go build cont/cmd/multiplex" />
       <item itemvalue="Go Test.go test cont/cmd/daemon" />
       <item itemvalue="Go Test.TestDynamicPipe_Read_SmallBuffer in cont/cmd/daemon" />
       <item itemvalue="Go Test.TestDynamicPipe_Write in cont/cmd/daemon" />
-      <item itemvalue="Go Build.go build cont/cmd/multiplex" />
     </list>
     <recent_temporary>
       <list>
@@ -206,7 +203,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/multiplex/mux.go</url>
-          <line>83</line>
+          <line>86</line>
           <option name="timeStamp" value="56" />
         </line-breakpoint>
       </breakpoints>
