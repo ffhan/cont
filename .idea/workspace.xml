@@ -4,17 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="removed dynamic pipes, pipes (local runtime won't work)">
-      <change afterPath="$PROJECT_DIR$/assets/cont-remote.mp4" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/kill_container.sh" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="kill debugging, attaching, pipe cleanup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attach_container.sh" beforeDir="false" afterPath="$PROJECT_DIR$/attach_container.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/container/container.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/container.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/sender.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/sender.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run_container.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run_container.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,7 +180,8 @@
     <MESSAGE value="multiplex receiver" />
     <MESSAGE value="multiple stdin stdout stderr works, detaching doesn't (WIP cleanup)" />
     <MESSAGE value="removed dynamic pipes, pipes (local runtime won't work)" />
-    <option name="LAST_COMMIT_MESSAGE" value="removed dynamic pipes, pipes (local runtime won't work)" />
+    <MESSAGE value="kill debugging, attaching, pipe cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="kill debugging, attaching, pipe cleanup" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
