@@ -170,25 +170,11 @@ func (s *server) Run(ctx context.Context, request *api.ContainerRequest) (*api.C
 		return nil, err
 	}
 
-	pipes, err := cont.OpenPipes(pipePath)
-	if err != nil {
-		log.Printf("cannot open pipes: %v\n", err)
-		return nil, err
-	}
-
-	go s.runContainer(pipes, pipePath, request, id)
+	go s.runContainer(pipePath, request, id)
 	return &api.ContainerResponse{Uuid: idBytes}, nil
 }
 
-func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.ContainerRequest, id uuid.UUID) {
-	defer func() {
-		for _, pipe := range pipes {
-			pipe.Close()
-		}
-		if err := cont.RemovePipes(pipePath); err != nil {
-			log.Println(err)
-		}
-	}()
+func (s *server) runContainer(pipePath string, request *api.ContainerRequest, id uuid.UUID) {
 	eventChan := make(chan *api.Event)
 	events[id] = eventChan
 
@@ -212,13 +198,6 @@ func (s *server) runContainer(pipes [3]*os.File, pipePath string, request *api.C
 		Source:  "", // todo: fill source
 		Data:    nil,
 	}
-
-	//stdin := NewDynamicPipe() // pipes have to exist currently because otherwise local running doesn't work
-	//stdin.Add(pipes[0])
-	//stdout := NewDynamicPipe()
-	//stdout.Add(pipes[1])
-	//stderr := NewDynamicPipe()
-	//stderr.Add(pipes[2])
 
 	sin, sout, serr := s.ContainerStreamIDs(id)
 
