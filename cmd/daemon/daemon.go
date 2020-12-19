@@ -4,6 +4,7 @@ import (
 	"cont/api"
 	"cont/cmd"
 	"cont/container"
+	"cont/daemon"
 	"cont/multiplex"
 	"google.golang.org/grpc"
 	"net"
@@ -24,7 +25,7 @@ func main() {
 
 	muxClient := multiplex.NewClient()
 
-	daemonServer, err := NewServer(muxClient, streamListener)
+	daemonServer, err := daemon.NewServer(muxClient, streamListener)
 	must(err)
 
 	s := grpc.NewServer()

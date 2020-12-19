@@ -4,15 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="cleanup">
-      <change afterPath="$PROJECT_DIR$/daemon/events.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/events.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/kill.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/kill.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/ps.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/ps.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/run.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/streaming.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/streaming.go" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="daemon cleanup">
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +155,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="kill active processes" />
     <MESSAGE value="event stream" />
     <MESSAGE value="usage gif" />
     <MESSAGE value="multiplexing a tcp connection POC" />
@@ -187,7 +179,8 @@
     <MESSAGE value="cleanup implemented" />
     <MESSAGE value="refactoring" />
     <MESSAGE value="cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="cleanup" />
+    <MESSAGE value="daemon cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="daemon cleanup" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
