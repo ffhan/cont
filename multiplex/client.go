@@ -10,9 +10,11 @@
 package multiplex
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"sync"
+	"time"
 )
 
 type Streamer interface {
@@ -34,11 +36,19 @@ type Client struct {
 
 // initializes a new Client
 func NewClient() *Client {
-	return &Client{
+	c := &Client{
 		streams: make(map[string]map[Streamer]bool),
 		muxes:   make(map[*Mux]bool),
 		senders: make(map[*Sender]bool),
 	}
+	go func() {
+		for range time.NewTicker(5 * time.Second).C {
+			fmt.Println("streams: ", c.streams)
+			fmt.Println("senders: ", c.senders)
+			fmt.Println("muxes: ", c.muxes)
+		}
+	}()
+	return c
 }
 
 // creates a new Mux for the connection
@@ -111,6 +121,9 @@ func (c *Client) removeStream(id string, stream Streamer) {
 		return
 	}
 	delete(c.streams[id], stream)
+	if len(c.streams[id]) == 0 {
+		delete(c.streams, id)
+	}
 }
 
 // retrieve all streams for the provided ID

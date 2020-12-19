@@ -36,6 +36,7 @@ const maxBuffer = 32768
 
 // read incoming data from a connection and pass it to appropriate streams
 func (m *Mux) readIncoming() {
+	defer m.Close()
 	buffer := make([]byte, maxBuffer)
 	for {
 		//fmt.Println("starting reading in mux")
@@ -43,6 +44,7 @@ func (m *Mux) readIncoming() {
 		data := buffer[:read]
 		if err != nil {
 			if errors.Is(err, io.EOF) {
+				log.Printf("cannot read from output (EOF): %v\n", err)
 				return
 			}
 			log.Printf("cannot read from output: %v\n", err)
@@ -154,6 +156,7 @@ func (m *Mux) removeStream(stream Streamer) {
 	m.streamMutex.Lock()
 	defer m.streamMutex.Unlock()
 	delete(m.ownedStreams, stream)
+	m.client.removeStream(stream.ID(), stream)
 }
 
 // Closes a Stream and removes it from the Client and the Mux.
@@ -165,6 +168,7 @@ func (m *Mux) closeStream(s Streamer) error {
 }
 
 func (m *Mux) executeOnClose() {
+	log.Println("executing OnClose mux functions")
 	for _, f := range m.onClose {
 		f := f
 		go f(m)
@@ -176,12 +180,9 @@ func (m *Mux) Close() error {
 	//log.Println("closed mux")
 	defer m.executeOnClose()
 
-	m.streamMutex.RLock()
-	defer m.streamMutex.RUnlock()
 	m.client.muxMutex.Lock()
-	defer m.client.muxMutex.Unlock()
-
 	delete(m.client.muxes, m)
+	m.client.muxMutex.Unlock()
 
 	var resultErr error
 	for s := range m.ownedStreams {

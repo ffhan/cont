@@ -37,5 +37,6 @@ func (s *Stream) String() string {
 
 func (s *Stream) Close() error {
 	//log.Printf("closed stream %s", s)
+	s.mux.removeStream(s)
 	return s.input.Close()
 }

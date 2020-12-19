@@ -18,6 +18,7 @@ Currently supports:
 Check out help with `go run cmd/cli/cli.go help`.
 
 * `go run cmd/cli/cli.go run --it bash` - run bash in an isolated container with connected stdin
+* `go run cmd/cli/cli.go attach --it <container_id>` - attach to a running container
 * `go run cmd/cli/cli.go ps` - list running containers
 
 Daemon: `go run cmd/daemon/daemon.go`
@@ -45,7 +46,7 @@ Daemon: `go run cmd/daemon/daemon.go`
 * [x] attach to a container
 * [ ] clean up multiplex module & dynamic pipe
 * [ ] clean up daemon & CLI codebase
-* [ ] dropped connection/stream detection & cleanup
+* [x] dropped connection/stream detection & cleanup
 
 ## Examples
 

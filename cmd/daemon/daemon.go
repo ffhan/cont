@@ -86,10 +86,12 @@ func (s *server) acceptStreamConnections(listener net.Listener) {
 			mux:  mux,
 		}
 		mux.AddOnClose(func(mux *multiplex.Mux) { // todo: implement ping stream for each mux to constantly check connections and remove unused ones
+			log.Println("removing mux connection")
 			s.connectionsMutex.Lock()
 			defer s.connectionsMutex.Unlock()
 			delete(s.connections, clientID)
 		})
+
 		s.connectionsMutex.Unlock()
 		log.Printf("added mux to connections for client %s\n", clientID.String())
 	}
@@ -102,29 +104,11 @@ func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
 			return err
 		}
 		fmt.Println("received a stream request")
-		//clientID, err := uuid.FromBytes(recv.ClientId)
-		//if err != nil {
-		//	return err
-		//}
-
-		//s.connectionsMutex.RLock()
-		//conn, ok := s.connections[clientID]
-		//s.connectionsMutex.RUnlock()
-		//if !ok {
-		//	return fmt.Errorf("no connection for the client ID %s", clientID.String())
-		//}
 
 		containerId, err := uuid.FromBytes(recv.Id)
 		if err != nil {
 			return err
 		}
-
-		//mutex.Lock()
-		//cont, ok := currentlyRunning[containerId]
-		//if !ok {
-		//	return fmt.Errorf("no currently running container %s", containerId.String())
-		//}
-		//mutex.Unlock()
 
 		stdinId, stdoutId, stderrId := s.ContainerStreamIDs(containerId)
 
@@ -135,24 +119,6 @@ func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
 		}); err != nil {
 			return err
 		}
-
-		fmt.Println(stdinId, stdoutId, stderrId)
-
-		// create streams
-		//r := s.muxClient.NewReceiver(stdinId)
-		//go io.Copy(os.Stdout, r)
-		//_ = conn.mux.NewStream(stdoutId)
-		//_ = conn.mux.NewStream(stderrId)
-
-		//fmt.Println("created new streams")
-		// fixme: go run cmd/cli/cli.go run --host 127.0.0.1 --workdir /home/fhancic --hostname test2 ./skripta.sh
-		// remote continuous stdout works (at least for 1 client)
-		// todo: what about removing streams?
-		//cont.Stdin.Add(inStream)
-		//cont.Stdout.Add(outStream)
-		//cont.Stderr.Add(errStream)
-
-		//fmt.Printf("attached remote streams to container %s\n", containerId.String())
 	}
 }
 

@@ -33,5 +33,6 @@ func (r *Receiver) String() string {
 
 func (r *Receiver) Close() error {
 	log.Printf("closed receiver %s", r)
+	r.client.removeStream(r.id, r)
 	return r.input.Close()
 }
