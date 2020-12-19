@@ -1,6 +1,7 @@
 package container
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -22,8 +23,8 @@ type Config struct {
 	Args           []string
 }
 
-func Start(config *Config) (*exec.Cmd, error) {
-	cmd := exec.Command("/proc/self/exe", append([]string{config.Cmd}, config.Args...)...)
+func Start(ctx context.Context, config *Config) (*exec.Cmd, error) {
+	cmd := exec.CommandContext(ctx, "/proc/self/exe", append([]string{config.Cmd}, config.Args...)...)
 	cmd.Stdin = config.Stdin
 	cmd.Stdout = config.Stdout
 	cmd.Stderr = config.Stderr
@@ -45,8 +46,8 @@ func Start(config *Config) (*exec.Cmd, error) {
 	return cmd, cmd.Start()
 }
 
-func Run(config *Config) (*exec.Cmd, error) {
-	cmd, err := Start(config)
+func Run(ctx context.Context, config *Config) (*exec.Cmd, error) {
+	cmd, err := Start(ctx, config)
 	if err != nil {
 		return cmd, err
 	}

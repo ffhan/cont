@@ -26,6 +26,9 @@ func (s *Sender) Write(p []byte) (n int, err error) {
 			defer wg.Done()
 			if _, err := mux.write(s.id, p); err != nil { // todo: remove mux (& streams) on failed writes
 				log.Printf("cannot write to mux \"%s\": %v", mux.Name, err)
+				if err := mux.Close(); err != nil {
+					log.Printf("cannot close Mux %s: %v", mux.Name, err)
+				}
 			}
 		}()
 	}

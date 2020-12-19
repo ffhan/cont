@@ -64,7 +64,6 @@ func handleStdin(stdinPipe io.WriteCloser) {
 }
 
 func closePipes(stdin, stdout, stderr io.ReadWriteCloser) {
-	stdin.Write([]byte("exit\n"))
 	stdin.Close()
 	stdout.Close()
 	stderr.Close()

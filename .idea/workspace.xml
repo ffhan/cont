@@ -4,11 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="multiple stdin stdout stderr works, detaching doesn't (WIP cleanup)">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="removed dynamic pipes, pipes (local runtime won't work)">
+      <change afterPath="$PROJECT_DIR$/assets/cont-remote.mp4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kill_container.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/attach_container.sh" beforeDir="false" afterPath="$PROJECT_DIR$/attach_container.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/dynamic_pipe_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/container/container.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/container.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/sender.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/sender.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_container.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run_container.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +54,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/multiplex" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
@@ -62,12 +68,12 @@
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/multiplex" />
       <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/multiplex" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/cmd/multiplex" />
       <recent name="$PROJECT_DIR$/assets" />
+      <recent name="$PROJECT_DIR$/cmd/multiplex" />
       <recent name="$PROJECT_DIR$/cmd/socket_test/server" />
       <recent name="$PROJECT_DIR$/cmd/cli" />
       <recent name="$PROJECT_DIR$/container" />
@@ -181,7 +187,8 @@
     <MESSAGE value="getting rid of dynamic pipes" />
     <MESSAGE value="multiplex receiver" />
     <MESSAGE value="multiple stdin stdout stderr works, detaching doesn't (WIP cleanup)" />
-    <option name="LAST_COMMIT_MESSAGE" value="multiple stdin stdout stderr works, detaching doesn't (WIP cleanup)" />
+    <MESSAGE value="removed dynamic pipes, pipes (local runtime won't work)" />
+    <option name="LAST_COMMIT_MESSAGE" value="removed dynamic pipes, pipes (local runtime won't work)" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -191,7 +198,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/container/container.go</url>
-          <line>16</line>
+          <line>17</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
@@ -201,7 +208,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/multiplex/mux.go</url>
-          <line>85</line>
+          <line>90</line>
           <option name="timeStamp" value="56" />
         </line-breakpoint>
       </breakpoints>

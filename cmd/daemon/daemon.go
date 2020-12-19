@@ -1,7 +1,6 @@
 package main
 
 import (
-	"cont"
 	"cont/api"
 	"cont/cmd"
 	"cont/container"
@@ -19,7 +18,6 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 )
 
@@ -30,6 +28,7 @@ type Container struct {
 	Command        string
 	Stdin          io.ReadCloser
 	Stdout, Stderr io.WriteCloser
+	cancel         context.CancelFunc
 }
 
 type server struct {
@@ -53,6 +52,15 @@ func NewServer(muxClient *multiplex.Client, connectionListener net.Listener) (*s
 	}
 	s := &server{muxClient: muxClient, connections: make(map[uuid.UUID]*streamConn)}
 	go s.acceptStreamConnections(connectionListener)
+
+	go func() {
+		ticker := time.NewTicker(5 * time.Second)
+		defer ticker.Stop()
+		for range ticker.C {
+			fmt.Println(s.connections)
+		}
+	}()
+
 	return s, nil
 }
 
@@ -77,6 +85,11 @@ func (s *server) acceptStreamConnections(listener net.Listener) {
 			Conn: accept,
 			mux:  mux,
 		}
+		mux.AddOnClose(func(mux *multiplex.Mux) { // todo: implement ping stream for each mux to constantly check connections and remove unused ones
+			s.connectionsMutex.Lock()
+			defer s.connectionsMutex.Unlock()
+			delete(s.connections, clientID)
+		})
 		s.connectionsMutex.Unlock()
 		log.Printf("added mux to connections for client %s\n", clientID.String())
 	}
@@ -164,40 +177,34 @@ func (s *server) Run(ctx context.Context, request *api.ContainerRequest) (*api.C
 		return nil, err
 	}
 
-	pipePath := cont.PipePath(id)
-	if err := cont.CreatePipes(pipePath); err != nil {
-		log.Printf("cannot create pipes: %v\n", err)
-		return nil, err
-	}
-
-	go s.runContainer(pipePath, request, id)
+	go s.runContainer(request, id)
 	return &api.ContainerResponse{Uuid: idBytes}, nil
 }
 
-func (s *server) runContainer(pipePath string, request *api.ContainerRequest, id uuid.UUID) {
+func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 	eventChan := make(chan *api.Event)
 	events[id] = eventChan
 
 	binaryId, err := id.MarshalBinary()
 	if err != nil {
 		log.Println(err)
-		eventChan <- &api.Event{
+		s.sendEvent(eventChan, &api.Event{
 			Id:      nil,
 			Type:    cmd.Failed,
 			Message: id.String(),
 			Source:  "",
 			Data:    nil,
-		}
+		})
 		return
 	}
 
-	eventChan <- &api.Event{
+	s.sendEvent(eventChan, &api.Event{
 		Id:      binaryId,
 		Type:    cmd.Created,
 		Message: "",
 		Source:  "", // todo: fill source
 		Data:    nil,
-	}
+	})
 
 	sin, sout, serr := s.ContainerStreamIDs(id)
 
@@ -209,7 +216,15 @@ func (s *server) runContainer(pipePath string, request *api.ContainerRequest, id
 	defer stdout.Close()
 	defer stdin.Close()
 
-	containerCommand, err := container.Start(&container.Config{
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	defer func() {
+		close(eventChan)
+		delete(events, id)
+	}()
+
+	containerCommand, err := container.Start(ctx, &container.Config{
 		Stdin:    stdin,
 		Stdout:   stdout,
 		Stderr:   stderr,
@@ -222,13 +237,13 @@ func (s *server) runContainer(pipePath string, request *api.ContainerRequest, id
 		log.Printf("container start error: %v\n", err)
 		return
 	}
-	eventChan <- &api.Event{
+	s.sendEvent(eventChan, &api.Event{
 		Id:      binaryId,
 		Type:    cmd.Started,
 		Message: "",
 		Source:  "", // todo: fill source
 		Data:    nil,
-	}
+	})
 	fmt.Printf("container %s started\n", id.String())
 
 	mutex.Lock()
@@ -240,6 +255,7 @@ func (s *server) runContainer(pipePath string, request *api.ContainerRequest, id
 		Stdin:   stdin,
 		Stdout:  stdout,
 		Stderr:  stderr,
+		cancel:  cancel,
 	}
 	mutex.Unlock()
 
@@ -248,21 +264,27 @@ func (s *server) runContainer(pipePath string, request *api.ContainerRequest, id
 		defer mutex.Unlock()
 		delete(currentlyRunning, id)
 	}()
-	if err = containerCommand.Wait(); err != nil {
-		log.Printf("container error: %v\n", err)
+	if err = containerCommand.Wait(); err != nil { // fixme: this hangs if process has been killed directly!
+		log.Printf("wait error (container is dead): %v\n", err)
+		log.Printf("container %s killed \n", id.String())
 		return
 	}
 	fmt.Println("sending done event")
-	eventChan <- &api.Event{
+	s.sendEvent(eventChan, &api.Event{
 		Id:      binaryId,
 		Type:    cmd.Done,
 		Message: "",
 		Source:  "", // todo: fill source
 		Data:    nil,
-	}
-	close(eventChan)
-	delete(events, id)
+	})
 	log.Printf("container %s done\n", id.String())
+}
+
+func (s *server) sendEvent(eventChan chan *api.Event, event *api.Event) {
+	select {
+	case eventChan <- event:
+	case <-time.After(100 * time.Millisecond):
+	}
 }
 
 func (s *server) Kill(ctx context.Context, killCommand *api.KillCommand) (*api.ContainerResponse, error) {
@@ -280,19 +302,18 @@ func (s *server) Kill(ctx context.Context, killCommand *api.KillCommand) (*api.C
 		return nil, errors.New("cannot find container events")
 	}
 
-	if err = c.Cmd.Process.Signal(syscall.SIGTERM); err != nil { // todo: stdin WriteCloser so that interactive clients see the kill
-		return nil, err
-	}
+	_ = c.Stdin.Close()
+	_ = c.Stdout.Close()
+	_ = c.Stderr.Close()
+	c.cancel()
 
-	eventChan <- &api.Event{
+	s.sendEvent(eventChan, &api.Event{
 		Id:      killCommand.Id,
 		Type:    cmd.Killed,
 		Message: "",
 		Source:  "",
 		Data:    nil,
-	}
-	close(eventChan)
-	delete(events, id)
+	})
 
 	return &api.ContainerResponse{Uuid: killCommand.Id}, nil
 }

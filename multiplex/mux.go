@@ -17,6 +17,11 @@ type Mux struct {
 	client       *Client
 	Name         string
 	conn         io.ReadWriteCloser
+	onClose      []func(mux *Mux)
+}
+
+func (m *Mux) AddOnClose(onClose func(mux *Mux)) {
+	m.onClose = append(m.onClose, onClose)
 }
 
 func (m *Mux) GetOwnedStreams() map[Streamer]bool {
@@ -159,14 +164,25 @@ func (m *Mux) closeStream(s Streamer) error {
 	return s.Close()
 }
 
+func (m *Mux) executeOnClose() {
+	for _, f := range m.onClose {
+		f := f
+		go f(m)
+	}
+}
+
 // Closes a Mux and the streams it owns.
 func (m *Mux) Close() error {
 	//log.Println("closed mux")
+	defer m.executeOnClose()
+
 	m.streamMutex.RLock()
 	defer m.streamMutex.RUnlock()
 	m.client.muxMutex.Lock()
 	defer m.client.muxMutex.Unlock()
+
 	delete(m.client.muxes, m)
+
 	var resultErr error
 	for s := range m.ownedStreams {
 		if err := m.closeStream(s); err != nil {
