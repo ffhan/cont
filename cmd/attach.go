@@ -69,7 +69,7 @@ var attachCmd = &cobra.Command{
 		// todo: attaching stdout doesn't work
 		attachOutput(&wg, stdout, stderr)
 		if isInteractive, err := cmd.Flags().GetBool("it"); err == nil && isInteractive {
-			setupInteractive(&wg, stdin)
+			setupInteractive(&wg, stdin, stdout)
 		} else {
 			must(err)
 		}

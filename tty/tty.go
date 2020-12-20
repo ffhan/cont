@@ -110,8 +110,10 @@ const (
 )
 
 type PTY struct {
-	Master *os.File
-	Slave  *os.File
+	Master         *os.File
+	Slave          *os.File
+	runningTermios *Termios
+	backupTermios  *Termios
 }
 
 func OpenPTY() (*PTY, error) {
@@ -157,6 +159,9 @@ func (p *PTY) PTSName() (string, error) {
 }
 
 func (p *PTY) Close() error {
+	if p.backupTermios != nil {
+		p.backupTermios.Set(os.Stdin)
+	}
 	slaveErr := errors.New("Slave FD nil")
 	if p.Slave != nil {
 		slaveErr = p.Slave.Close()

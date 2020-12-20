@@ -10,44 +10,46 @@ import (
 	"syscall"
 )
 
-func Start(cmd *exec.Cmd, stdin io.Reader, stdout io.Writer) error {
-	if stdin == nil {
-		return errors.New("stdin is nil")
-	}
-	if stdout == nil {
-		return errors.New("stdout is nil")
-	}
-
+func AttachPTSToTerminal(stdin io.Reader, stdout io.Writer) (*PTY, error) {
 	pty, err := OpenPTY()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	backupTerm, err := Attr(os.Stdin)
 	if err != nil {
-		return fmt.Errorf("cannot get term attr: %w", err)
+		return nil, fmt.Errorf("cannot get term attr: %w", err)
 	}
 	// Copy attributes
 	myTerm := backupTerm
 	// Change the Stdin term to RAW so we get everything
 	myTerm.Raw()
 
+	pty.runningTermios = &myTerm
+	pty.backupTermios = &backupTerm
+
 	if err = myTerm.Set(os.Stdin); err != nil {
-		return fmt.Errorf("cannot set stdin termios: %w", err)
+		return nil, fmt.Errorf("cannot set stdin termios: %w", err)
 	}
 	// Set the backup attributes on our PTY slave
 	if err = backupTerm.Set(pty.Slave); err != nil {
-		return fmt.Errorf("cannot set slave termios: %w", err)
+		return nil, fmt.Errorf("cannot set slave termios: %w", err)
 	}
-	// Get the snooping going
-	go Snoop(pty, stdin, stdout)
 
 	sig := make(chan os.Signal, 2)
-	signal.Notify(sig, syscall.SIGWINCH, syscall.SIGCLD)
+	signal.Notify(sig, syscall.SIGWINCH, syscall.SIGCLD, os.Interrupt)
+
+	go Snoop(pty, stdin, stdout)
+
+	if err := myTerm.Winsz(os.Stdin); err != nil {
+		return nil, err
+	}
+	if err := myTerm.Winsz(pty.Slave); err != nil {
+		return nil, err
+	}
 
 	go func() {
 		// Make sure we'll get the attributes back when exiting
-		defer backupTerm.Set(os.Stdin)
 		for {
 			switch <-sig {
 			case syscall.SIGWINCH:
@@ -58,6 +60,21 @@ func Start(cmd *exec.Cmd, stdin io.Reader, stdout io.Writer) error {
 			}
 		}
 	}()
+	return pty, nil
+}
+
+func Start(cmd *exec.Cmd, stdin io.Reader, stdout io.Writer) (*PTY, error) {
+	if stdin == nil {
+		return nil, errors.New("stdin is nil")
+	}
+	if stdout == nil {
+		return nil, errors.New("stdout is nil")
+	}
+
+	pty, err := AttachPTSToTerminal(stdin, stdout)
+	if err != nil {
+		return nil, err
+	}
 
 	cmd.Stdin = pty.Slave
 	cmd.Stdout = pty.Slave
@@ -69,15 +86,9 @@ func Start(cmd *exec.Cmd, stdin io.Reader, stdout io.Writer) error {
 	cmd.SysProcAttr.Setctty = true
 
 	if err := cmd.Start(); err != nil {
-		return err
+		return nil, err
 	}
-	if err := myTerm.Winsz(os.Stdin); err != nil {
-		return err
-	}
-	if err := myTerm.Winsz(pty.Slave); err != nil {
-		return err
-	}
-	return nil
+	return pty, nil
 }
 
 func Snoop(pty *PTY, stdin io.Reader, stdout io.Writer) {
@@ -92,7 +103,7 @@ func reader(master *os.File, stdout io.Writer) {
 		nr, _ := master.Read(buf)
 		read := buf[:nr]
 		if _, err := stdout.Write(read); err != nil {
-			panic(err)
+			os.Exit(0)
 		}
 		//log.Printf("written %s", string(read))
 	}
@@ -106,7 +117,7 @@ func writer(master *os.File, stdin io.Reader) {
 		read := buf[:nr]
 		//log.Printf("read %s", string(read))
 		if _, err := master.Write(read); err != nil {
-			panic(err)
+			os.Exit(0)
 		}
 	}
 }

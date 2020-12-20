@@ -4,6 +4,7 @@ import (
 	"cont"
 	"cont/api"
 	"cont/multiplex"
+	"cont/tty"
 	"context"
 	"encoding/gob"
 	"fmt"
@@ -59,10 +60,6 @@ func handleEvents(client api.ApiClient, signals chan os.Signal, started chan boo
 	}
 }
 
-func handleStdin(stdinPipe io.WriteCloser) {
-	go io.Copy(stdinPipe, os.Stdin)
-}
-
 func closePipes(stdin, stdout, stderr io.ReadWriteCloser) {
 	stdin.Close()
 	stdout.Close()
@@ -75,10 +72,26 @@ func must(err error) {
 	}
 }
 
-func setupInteractive(wg *sync.WaitGroup, stdin io.ReadWriteCloser) {
+func setupInteractive(wg *sync.WaitGroup, stdin, stdout io.ReadWriteCloser) {
 	wg.Add(1)
 	go func() {
-		handleStdin(stdin)
+		//go io.Copy(stdin, os.Stdin)
+		//go io.Copy(os.Stdout, stdout)
+		pty, err := tty.AttachPTSToTerminal(os.Stdin, os.Stdout)
+		if err != nil {
+			panic(err)
+		}
+		defer pty.Close()
+		go io.Copy(pty.Slave, stdout)
+		buffer := make([]byte, 1)
+		for {
+			if _, err := pty.Slave.Read(buffer); err != nil {
+				return
+			}
+			if _, err := stdin.Write(buffer); err != nil {
+				return
+			}
+		}
 		wg.Done()
 	}()
 }

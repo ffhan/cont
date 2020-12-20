@@ -92,10 +92,11 @@ func RunChild() error {
 	}
 
 	if os.Getenv(interactiveEnv) != "" {
-		err := tty.Start(cmd, os.Stdin, os.Stdout)
+		pty, err := tty.Start(cmd, os.Stdin, os.Stdout)
 		if err != nil {
 			return fmt.Errorf("cannot start TTY: %w", err)
 		}
+		defer pty.Close()
 		return cmd.Wait()
 	} else {
 		if err := cmd.Run(); err != nil {

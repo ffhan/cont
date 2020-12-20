@@ -33,6 +33,9 @@ var runCmd = &cobra.Command{
 		isInteractive, err := cmd.Flags().GetBool("it")
 		must(err)
 
+		isDetached, err := cmd.Flags().GetBool("detached")
+		must(err)
+
 		isLocal := host == Localhost
 
 		workdir, err := cmd.Flags().GetString("workdir")
@@ -77,24 +80,23 @@ var runCmd = &cobra.Command{
 		}
 		defer closePipes(stdin, stdout, stderr)
 
-		signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT)
-		go func() {
-			<-signals
-			closePipes(stdin, stdout, stderr)
-			os.Exit(0)
-		}()
-
 		var wg sync.WaitGroup
 
-		if isDetached, err := cmd.Flags().GetBool("detached"); err == nil && !isDetached {
-			attachOutput(&wg, stdout, stderr)
-		} else {
-			must(err)
+		if isDetached {
+			return
 		}
-		if isInteractive {
-			setupInteractive(&wg, stdin)
-		} else {
-			must(err)
+
+		if !isInteractive { // if no interactive mode, just output
+			attachOutput(&wg, stdout, stderr)
+
+			signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT)
+			go func() {
+				<-signals
+				closePipes(stdin, stdout, stderr)
+				os.Exit(0)
+			}()
+		} else { // if interactive mode
+			setupInteractive(&wg, stdin, stdout)
 		}
 		wg.Wait()
 	},

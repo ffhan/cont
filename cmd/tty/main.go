@@ -17,10 +17,11 @@ func main() {
 	go io.Copy(inW, os.Stdin)
 	go io.Copy(os.Stdout, outR)
 
-	err := tty.Start(cmd, inR, outW)
+	pty, err := tty.Start(cmd, inR, outW)
 	if err != nil {
 		panic(err)
 	}
+	defer pty.Close()
 
 	if err = cmd.Wait(); err != nil {
 		log.Println(err)
