@@ -1,6 +1,7 @@
 package container
 
 import (
+	"cont/tty"
 	"context"
 	"fmt"
 	"io"
@@ -10,8 +11,9 @@ import (
 )
 
 const (
-	hostEnv    = "HOST"
-	workdirEnv = "WORKDIR"
+	hostEnv        = "HOST"
+	workdirEnv     = "WORKDIR"
+	interactiveEnv = "INTERACTIVE"
 )
 
 type Config struct {
@@ -21,6 +23,7 @@ type Config struct {
 	Workdir        string
 	Cmd            string
 	Args           []string
+	Interactive    bool
 }
 
 func Start(ctx context.Context, config *Config) (*exec.Cmd, error) {
@@ -33,6 +36,9 @@ func Start(ctx context.Context, config *Config) (*exec.Cmd, error) {
 	cmd.Env = append(cmd.Env,
 		fmt.Sprintf(hostEnv+"=%s", config.Hostname),
 		fmt.Sprintf(workdirEnv+"=%s", config.Workdir))
+	if config.Interactive {
+		cmd.Env = append(cmd.Env, fmt.Sprintf(interactiveEnv+"=%t", config.Interactive))
+	}
 
 	cmd.SysProcAttr = &syscall.SysProcAttr{ // todo: isolate users, rootless container
 		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWNET | syscall.CLONE_NEWUSER,
@@ -75,8 +81,16 @@ func RunChild() error {
 		return err
 	}
 
-	if err := cmd.Run(); err != nil {
-		return err
+	if os.Getenv(interactiveEnv) != "" {
+		err := tty.Start(cmd, os.Stdin, os.Stdout)
+		if err != nil {
+			return err
+		}
+		return cmd.Wait()
+	} else {
+		if err := cmd.Run(); err != nil {
+			return err
+		}
 	}
 
 	if err := os.Chdir("/"); err != nil {

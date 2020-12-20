@@ -50,13 +50,14 @@ func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 	defer cancel()
 
 	containerCommand, err := container.Start(ctx, &container.Config{
-		Stdin:    stdin,
-		Stdout:   stdout,
-		Stderr:   stderr,
-		Hostname: request.Hostname,
-		Workdir:  request.Workdir,
-		Cmd:      request.Cmd,
-		Args:     request.Args,
+		Stdin:       stdin,
+		Stdout:      stdout,
+		Stderr:      stderr,
+		Hostname:    request.Hostname,
+		Workdir:     request.Workdir,
+		Cmd:         request.Cmd,
+		Args:        request.Args,
+		Interactive: request.Opts.Interactive,
 	})
 	if err != nil {
 		log.Printf("container start error: %v\n", err)

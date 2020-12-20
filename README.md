@@ -4,7 +4,7 @@ A toy container runner & orchestrator.
 
 Currently supports:
 
-* running containers interactively or in detached mode
+* running containers interactively (PTY) or in detached mode
 * killing active containers
 * listing active containers
 * isolated mounts, network, user namespaces, process namespace...
@@ -42,10 +42,10 @@ Daemon: `go run cmd/daemon/daemon.go`
 
 ## Remote IPC TODO
 
-* [ ] signalling container kill (reuse gRPC kill)
+* [x] signalling container kill (reuse gRPC kill)
 * [x] attach to a container
 * [ ] clean up multiplex module
-* [ ] clean up daemon & CLI codebase
+* [x] clean up daemon & CLI codebase
 * [x] dropped connection/stream detection & cleanup
 
 ## Examples
