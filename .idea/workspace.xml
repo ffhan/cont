@@ -4,13 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="daemon fixed NewServer">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="refactoring">
+      <change afterPath="$PROJECT_DIR$/cmd/tty/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tty/tty.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daemon/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daemon/streaming.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/streaming.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/receiver.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/receiver.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +74,7 @@
       <recent name="$PROJECT_DIR$/cmd/cli" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Build.go build cont/cmd/daemon">
+  <component name="RunManager" selected="Go Build.go build cont/cmd/tty">
     <configuration name="go build cont/cmd/daemon" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="cont" />
       <working_directory value="$PROJECT_DIR$" />
@@ -91,6 +90,15 @@
       <kind value="PACKAGE" />
       <filePath value="$PROJECT_DIR$/cmd/multiplex/main.go" />
       <package value="cont/cmd/multiplex" />
+      <directory value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build cont/cmd/tty" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="cont" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <filePath value="$PROJECT_DIR$/cmd/tty/main.go" />
+      <package value="cont/cmd/tty" />
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
@@ -116,30 +124,20 @@
       <pattern value="^\QTestDynamicPipe_Write\E$" />
       <method v="2" />
     </configuration>
-    <configuration name="go test cont/cmd/daemon" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="cont" />
-      <working_directory value="$PROJECT_DIR$/cmd/daemon" />
-      <framework value="gotest" />
-      <kind value="PACKAGE" />
-      <package value="cont/cmd/daemon" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Go Build.go build cont/cmd/daemon" />
       <item itemvalue="Go Build.go build cont/cmd/multiplex" />
-      <item itemvalue="Go Test.go test cont/cmd/daemon" />
+      <item itemvalue="Go Build.go build cont/cmd/tty" />
       <item itemvalue="Go Test.TestDynamicPipe_Read_SmallBuffer in cont/cmd/daemon" />
       <item itemvalue="Go Test.TestDynamicPipe_Write in cont/cmd/daemon" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Build.go build cont/cmd/tty" />
         <item itemvalue="Go Build.go build cont/cmd/daemon" />
         <item itemvalue="Go Test.TestDynamicPipe_Read_SmallBuffer in cont/cmd/daemon" />
         <item itemvalue="Go Test.TestDynamicPipe_Write in cont/cmd/daemon" />
         <item itemvalue="Go Build.go build cont/cmd/multiplex" />
-        <item itemvalue="Go Test.go test cont/cmd/daemon" />
       </list>
     </recent_temporary>
   </component>
@@ -181,11 +179,11 @@
     <MESSAGE value="kill debugging, attaching, pipe cleanup" />
     <MESSAGE value="README update" />
     <MESSAGE value="cleanup implemented" />
-    <MESSAGE value="refactoring" />
     <MESSAGE value="cleanup" />
     <MESSAGE value="daemon cleanup" />
     <MESSAGE value="daemon fixed NewServer" />
-    <option name="LAST_COMMIT_MESSAGE" value="daemon fixed NewServer" />
+    <MESSAGE value="refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactoring" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
