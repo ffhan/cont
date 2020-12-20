@@ -27,8 +27,10 @@ Daemon: `go run cmd/daemon/daemon.go`
 
 * CLI
     * communicates with daemons through gRPC and handles IPC
+    * each interactive session is connected in a separate pseudo terminal and streams data in & out
 * daemon
     * communicates with clients and runs the containers
+    * TCP connections are multiplexed in multiple streams and stream container stdin, stdout & stderrs
 
 ## TODO
 
