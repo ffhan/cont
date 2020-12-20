@@ -38,9 +38,19 @@ func Start(ctx context.Context, config *Config) (*exec.Cmd, error) {
 		fmt.Sprintf(workdirEnv+"=%s", config.Workdir))
 	if config.Interactive {
 		cmd.Env = append(cmd.Env, fmt.Sprintf(interactiveEnv+"=%t", config.Interactive))
+		pty, err := tty.OpenPTY() // todo: close PTY on container exit
+		if err != nil {
+			return nil, err
+		}
+		cmd.Stdin = pty.Slave
+		cmd.Stdout = pty.Slave
+		cmd.Stderr = pty.Slave
+
+		go io.Copy(pty.Master, config.Stdin)
+		go io.Copy(config.Stdout, pty.Master)
 	}
 
-	cmd.SysProcAttr = &syscall.SysProcAttr{ // todo: isolate users, rootless container
+	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWNET | syscall.CLONE_NEWUSER,
 		UidMappings: []syscall.SysProcIDMap{
 			{ContainerID: 0, HostID: os.Getuid(), Size: 1},
@@ -84,7 +94,7 @@ func RunChild() error {
 	if os.Getenv(interactiveEnv) != "" {
 		err := tty.Start(cmd, os.Stdin, os.Stdout)
 		if err != nil {
-			return err
+			return fmt.Errorf("cannot start TTY: %w", err)
 		}
 		return cmd.Wait()
 	} else {

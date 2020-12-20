@@ -2,6 +2,7 @@ package tty
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -24,7 +25,7 @@ func Start(cmd *exec.Cmd, stdin io.Reader, stdout io.Writer) error {
 
 	backupTerm, err := Attr(os.Stdin)
 	if err != nil {
-		return err
+		return fmt.Errorf("cannot get term attr: %w", err)
 	}
 	// Copy attributes
 	myTerm := backupTerm
@@ -32,11 +33,11 @@ func Start(cmd *exec.Cmd, stdin io.Reader, stdout io.Writer) error {
 	myTerm.Raw()
 
 	if err = myTerm.Set(os.Stdin); err != nil {
-		return err
+		return fmt.Errorf("cannot set stdin termios: %w", err)
 	}
 	// Set the backup attributes on our PTY slave
 	if err = backupTerm.Set(pty.Slave); err != nil {
-		return err
+		return fmt.Errorf("cannot set slave termios: %w", err)
 	}
 	// Get the snooping going
 	go Snoop(pty, stdin, stdout)

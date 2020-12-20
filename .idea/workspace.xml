@@ -4,13 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="tty Start func">
-      <change afterPath="$PROJECT_DIR$/tty/start.go" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="tty in container">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/tty/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/tty/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/container/container.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/container.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daemon/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tty/start.go" beforeDir="false" afterPath="$PROJECT_DIR$/tty/start.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tty/tty.go" beforeDir="false" afterPath="$PROJECT_DIR$/tty/tty.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -159,7 +158,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="cleaned up main" />
     <MESSAGE value="M:N multiplexing" />
     <MESSAGE value="improved mux main func, multiplexing across multiple connections" />
     <MESSAGE value="session renamed to stream" />
@@ -184,7 +182,8 @@
     <MESSAGE value="refactoring" />
     <MESSAGE value="working tty!" />
     <MESSAGE value="tty Start func" />
-    <option name="LAST_COMMIT_MESSAGE" value="tty Start func" />
+    <MESSAGE value="tty in container" />
+    <option name="LAST_COMMIT_MESSAGE" value="tty in container" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

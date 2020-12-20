@@ -2,6 +2,7 @@ package tty
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -116,23 +117,23 @@ type PTY struct {
 func OpenPTY() (*PTY, error) {
 	master, err := os.OpenFile("/dev/ptmx", os.O_RDWR, 0)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cannot open ptmx: %w", err)
 	}
 	var unlock int
 	if _, _, errno := syscall.Syscall(syscall.SYS_IOCTL, master.Fd(), uintptr(TIOCSPTLCK), uintptr(unsafe.Pointer(&unlock))); errno != 0 {
 		_ = master.Close()
-		return nil, err
+		return nil, fmt.Errorf("cannot unlock PTY: %w", err)
 	}
 	pty := &PTY{Master: master}
 	slaveStr, err := pty.PTSName()
 	if err != nil {
 		master.Close()
-		return nil, err
+		return nil, fmt.Errorf("cannot get PTS name: %w", err)
 	}
 	pty.Slave, err = os.OpenFile(slaveStr, os.O_RDWR|syscall.O_NOCTTY, 0)
 	if err != nil {
 		master.Close()
-		return nil, err
+		return nil, fmt.Errorf("cannot open PTS: %w", err)
 	}
 	return pty, nil
 }

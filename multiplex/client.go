@@ -10,11 +10,9 @@
 package multiplex
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"sync"
-	"time"
 )
 
 type Streamer interface {
@@ -41,13 +39,13 @@ func NewClient() *Client {
 		muxes:   make(map[*Mux]bool),
 		senders: make(map[*Sender]bool),
 	}
-	go func() {
-		for range time.NewTicker(5 * time.Second).C {
-			fmt.Println("streams: ", c.streams)
-			fmt.Println("senders: ", c.senders)
-			fmt.Println("muxes: ", c.muxes)
-		}
-	}()
+	//go func() {
+	//	for range time.NewTicker(5 * time.Second).C {
+	//		fmt.Println("streams: ", c.streams)
+	//		fmt.Println("senders: ", c.senders)
+	//		fmt.Println("muxes: ", c.muxes)
+	//	}
+	//}()
 	return c
 }
 
