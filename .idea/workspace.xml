@@ -4,15 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="basic container TTY">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="improved TTY behaviour, CLI TTY">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/attach.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/attach.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/run.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/tty/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/tty/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/container/container.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/container.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tty/start.go" beforeDir="false" afterPath="$PROJECT_DIR$/tty/start.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tty/tty.go" beforeDir="false" afterPath="$PROJECT_DIR$/tty/tty.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -161,7 +156,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="improved mux main func, multiplexing across multiple connections" />
     <MESSAGE value="session renamed to stream" />
     <MESSAGE value="multiplex package basic implementation" />
     <MESSAGE value="cmd multiplex" />
@@ -186,7 +180,8 @@
     <MESSAGE value="tty Start func" />
     <MESSAGE value="tty in container" />
     <MESSAGE value="basic container TTY" />
-    <option name="LAST_COMMIT_MESSAGE" value="basic container TTY" />
+    <MESSAGE value="improved TTY behaviour, CLI TTY" />
+    <option name="LAST_COMMIT_MESSAGE" value="improved TTY behaviour, CLI TTY" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

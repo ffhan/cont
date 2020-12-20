@@ -33,6 +33,9 @@ var attachCmd = &cobra.Command{
 		host, err := cmd.Flags().GetString("host")
 		must(err)
 
+		isInteractive, err := cmd.Flags().GetBool("it")
+		must(err)
+
 		isLocal := host == Localhost
 
 		client := api.NewApiClient(conn)
@@ -56,22 +59,18 @@ var attachCmd = &cobra.Command{
 		}
 		defer closePipes(stdin, stdout, stderr)
 
-		signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT)
-		go func() {
-			<-signals
-			closePipes(stdin, stdout, stderr)
-			os.Exit(0)
-		}()
-
 		var wg sync.WaitGroup
 
-		// todo: cat java_error_in_idea_40817.log EOF, probably problem with packaging in mux & stream
-		// todo: attaching stdout doesn't work
-		attachOutput(&wg, stdout, stderr)
-		if isInteractive, err := cmd.Flags().GetBool("it"); err == nil && isInteractive {
+		if isInteractive {
 			setupInteractive(&wg, stdin, stdout)
 		} else {
-			must(err)
+			attachOutput(&wg, stdout, stderr)
+			signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT)
+			go func() {
+				<-signals
+				closePipes(stdin, stdout, stderr)
+				os.Exit(0)
+			}()
 		}
 		wg.Wait()
 	},

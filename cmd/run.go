@@ -86,7 +86,11 @@ var runCmd = &cobra.Command{
 			return
 		}
 
-		if !isInteractive { // if no interactive mode, just output
+		if isInteractive {
+			// if interactive mode
+			setupInteractive(&wg, stdin, stdout)
+		} else {
+			// if no interactive mode, just output
 			attachOutput(&wg, stdout, stderr)
 
 			signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT)
@@ -95,8 +99,6 @@ var runCmd = &cobra.Command{
 				closePipes(stdin, stdout, stderr)
 				os.Exit(0)
 			}()
-		} else { // if interactive mode
-			setupInteractive(&wg, stdin, stdout)
 		}
 		wg.Wait()
 	},
