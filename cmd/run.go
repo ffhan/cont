@@ -30,6 +30,9 @@ var runCmd = &cobra.Command{
 		host, err := cmd.Flags().GetString("host")
 		must(err)
 
+		isInteractive, err := cmd.Flags().GetBool("it")
+		must(err)
+
 		isLocal := host == Localhost
 
 		workdir, err := cmd.Flags().GetString("workdir")
@@ -45,6 +48,9 @@ var runCmd = &cobra.Command{
 			Workdir:  workdir,
 			Cmd:      args[0],
 			Args:     args[1:],
+			Opts: &api.ContainerOpts{
+				Interactive: isInteractive,
+			},
 		})
 		must(err)
 
@@ -85,7 +91,7 @@ var runCmd = &cobra.Command{
 		} else {
 			must(err)
 		}
-		if isInteractive, err := cmd.Flags().GetBool("it"); err == nil && isInteractive {
+		if isInteractive {
 			setupInteractive(&wg, stdin)
 		} else {
 			must(err)

@@ -4,12 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="refactoring">
-      <change afterPath="$PROJECT_DIR$/cmd/tty/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tty/tty.go" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="working tty!">
+      <change afterPath="$PROJECT_DIR$/tty/termios.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api.proto" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/tty/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/tty/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tty/tty.go" beforeDir="false" afterPath="$PROJECT_DIR$/tty/tty.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,11 +58,11 @@
   </component>
   <component name="RecentsManager">
     <key name="GoMoveDeclarationDialog.RECENT_KEY">
+      <recent name="$PROJECT_DIR$/tty" />
       <recent name="$PROJECT_DIR$/cmd/daemon" />
       <recent name="$PROJECT_DIR$/cmd" />
       <recent name="$PROJECT_DIR$/multiplex" />
       <recent name="$PROJECT_DIR$/cmd/socket_test" />
-      <recent name="$PROJECT_DIR$/container" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -158,7 +160,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="usage gif" />
     <MESSAGE value="multiplexing a tcp connection POC" />
     <MESSAGE value="cleaned up main" />
     <MESSAGE value="M:N multiplexing" />
@@ -183,7 +184,8 @@
     <MESSAGE value="daemon cleanup" />
     <MESSAGE value="daemon fixed NewServer" />
     <MESSAGE value="refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactoring" />
+    <MESSAGE value="working tty!" />
+    <option name="LAST_COMMIT_MESSAGE" value="working tty!" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

@@ -2,86 +2,132 @@ package main
 
 import (
 	"cont/tty"
+	"errors"
+	"io"
+	"log"
 	"os"
 	"os/exec"
 	"os/signal"
 	"syscall"
 )
 
-func main() {
-	pty, err := tty.OpenPTY()
-	if err != nil {
-		panic(err)
+func Start(cmd *exec.Cmd, stdin io.Reader, stdout io.Writer) error {
+	if stdin == nil {
+		return errors.New("stdin is nil")
+	}
+	if stdout == nil {
+		return errors.New("stdout is nil")
 	}
 
-	backupTerm, _ := tty.Attr(os.Stdin)
+	pty, err := tty.OpenPTY()
+	if err != nil {
+		return err
+	}
+
+	backupTerm, err := tty.Attr(os.Stdin)
+	if err != nil {
+		return err
+	}
 	// Copy attributes
 	myTerm := backupTerm
 	// Change the Stdin term to RAW so we get everything
-	//myTerm.Raw()
+	myTerm.Raw()
 
-	myTerm.Set(os.Stdin)
+	if err = myTerm.Set(os.Stdin); err != nil {
+		return err
+	}
 	// Set the backup attributes on our PTY slave
-	backupTerm.Set(pty.Slave)
-	// Make sure we'll get the attributes back when exiting
-	defer backupTerm.Set(os.Stdin)
+	if err = backupTerm.Set(pty.Slave); err != nil {
+		return err
+	}
 	// Get the snooping going
-	go Snoop(pty)
+	go Snoop(pty, stdin, stdout)
 
 	sig := make(chan os.Signal, 2)
 	signal.Notify(sig, syscall.SIGWINCH, syscall.SIGCLD)
 
-	command := exec.Command("bash")
-	command.Stdin = pty.Slave
-	command.Stdout = pty.Slave
-	command.Stderr = pty.Slave
-	command.SysProcAttr = &syscall.SysProcAttr{
-		Setsid:  true,
-		Setctty: true,
+	go func() {
+		// Make sure we'll get the attributes back when exiting
+		defer backupTerm.Set(os.Stdin)
+		for {
+			switch <-sig {
+			case syscall.SIGWINCH:
+				myTerm.Winsz(os.Stdin)
+				myTerm.Setwinsz(pty.Slave)
+			default:
+				return
+			}
+		}
+	}()
+
+	cmd.Stdin = pty.Slave
+	cmd.Stdout = pty.Slave
+	cmd.Stderr = pty.Slave
+	if cmd.SysProcAttr == nil {
+		cmd.SysProcAttr = &syscall.SysProcAttr{}
 	}
-	if err = command.Start(); err != nil {
+	cmd.SysProcAttr.Setsid = true
+	cmd.SysProcAttr.Setctty = true
+
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+	if err := myTerm.Winsz(os.Stdin); err != nil {
+		return err
+	}
+	if err := myTerm.Winsz(pty.Slave); err != nil {
+		return err
+	}
+	return nil
+}
+
+func main() {
+	cmd := exec.Command("bash")
+
+	inR, inW := io.Pipe()
+	outR, outW := io.Pipe()
+
+	go io.Copy(inW, os.Stdin)
+	go io.Copy(os.Stdout, outR)
+
+	err := Start(cmd, inR, outW)
+	if err != nil {
 		panic(err)
 	}
-	myTerm.Winsz(os.Stdin)
-	myTerm.Winsz(pty.Slave)
-	for {
-		switch <-sig {
-		case syscall.SIGWINCH:
-			myTerm.Winsz(os.Stdin)
-			myTerm.Setwinsz(pty.Slave)
-		default:
-			return
-		}
+
+	if err = cmd.Wait(); err != nil {
+		log.Println(err)
+		return
 	}
 }
 
-func Snoop(pty *tty.PTY) {
-	// Just something that might be a bit uniqe
-	//pid := os.Getpid()
-	//pidcol, _ := tty.NewColor256(strconv.Itoa(pid), strconv.Itoa(pid%256), "")
-	//greet := fmt.Sprintln("\n", term.Green(Welcome), " pid:", pidcol,
-	//	" file:", term.Yellow(file+strconv.Itoa(pid)+"\n"))
-	// Our logfile
-	//file, _ := os.Create(file + strconv.Itoa(pid))
-	//os.Stdout.Write([]byte(greet))
-	go reader(pty.Master)
-	go writer(pty.Master)
+func Snoop(pty *tty.PTY, stdin io.Reader, stdout io.Writer) {
+	go reader(pty.Master, stdout)
+	go writer(pty.Master, stdin)
 }
 
 // reader reads from master and writes to file and stdout
-func reader(master *os.File) {
+func reader(master *os.File, stdout io.Writer) {
 	var buf = make([]byte, 2048)
 	for {
 		nr, _ := master.Read(buf)
-		os.Stdout.Write(buf[:nr])
+		read := buf[:nr]
+		if _, err := stdout.Write(read); err != nil {
+			panic(err)
+		}
+		//log.Printf("written %s", string(read))
 	}
 }
 
 // writer reads from stdin and writes to master
-func writer(master *os.File) {
+func writer(master *os.File, stdin io.Reader) {
 	var buf = make([]byte, 2048)
 	for {
-		nr, _ := os.Stdin.Read(buf)
-		master.Write(buf[:nr])
+		nr, _ := stdin.Read(buf)
+		read := buf[:nr]
+		//log.Printf("read %s", string(read))
+		if _, err := master.Write(read); err != nil {
+			panic(err)
+		}
 	}
 }

@@ -20,12 +20,17 @@ message StreamResponse {
   string errId = 3; // stream stderr ID
 }
 
+message ContainerOpts {
+  bool interactive = 1;
+}
+
 message ContainerRequest {
   string name = 1;
   string hostname = 2;
   string workdir = 3;
   string cmd = 4;
   repeated string args = 8;
+  ContainerOpts opts = 9;
 }
 
 message ContainerResponse {

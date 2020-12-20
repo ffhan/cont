@@ -113,78 +113,6 @@ type PTY struct {
 	Slave  *os.File
 }
 
-type Termios struct {
-	syscall.Termios
-	Wz Winsize
-}
-
-type Winsize struct {
-	WsRow    uint16 // WsRow 		Terminal number of rows
-	WsCol    uint16 // WsCol 		Terminal number of columns
-	WsXpixel uint16 // WsXpixel Terminal width in pixels
-	WsYpixel uint16 // WsYpixel Terminal height in pixels
-}
-
-func (t *Termios) Winsz(file *os.File) error {
-	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, file.Fd(), uintptr(TIOCGWINSZ), uintptr(unsafe.Pointer(&t.Wz)))
-	if errno != 0 {
-		return errno
-	}
-	return nil
-}
-
-func (t *Termios) Setwinsz(file *os.File) error {
-	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(file.Fd()), uintptr(TIOCSWINSZ), uintptr(unsafe.Pointer(&t.Wz)))
-	if errno != 0 {
-		return errno
-	}
-	return nil
-}
-
-func (t *Termios) Set(file *os.File) error {
-	fd := file.Fd()
-	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(fd), uintptr(TCSETS), uintptr(unsafe.Pointer(t)))
-	if errno != 0 {
-		return errno
-	}
-	return nil
-}
-
-func Attr(file *os.File) (Termios, error) {
-	var t Termios
-	fd := file.Fd()
-	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, fd, uintptr(TCGETS), uintptr(unsafe.Pointer(&t)))
-	if errno != 0 {
-		return t, errno
-	}
-	t.Ispeed &= CBAUD | CBAUDEX
-	t.Ospeed &= CBAUD | CBAUDEX
-	return t, nil
-}
-
-func Isatty(file *os.File) bool {
-	_, err := Attr(file)
-	return err == nil
-}
-
-// return the PTY number
-func (p *PTY) PTSNumber() (uint, error) {
-	var ptyno uint
-	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, p.Master.Fd(), uintptr(TIOCGPTN), uintptr(unsafe.Pointer(&ptyno)))
-	if errno != 0 {
-		return 0, errno
-	}
-	return ptyno, nil
-}
-
-func (p *PTY) PTSName() (string, error) {
-	n, err := p.PTSNumber()
-	if err != nil {
-		return "", err
-	}
-	return filepath.Join("/dev/pts/", strconv.Itoa(int(n))), nil
-}
-
 func OpenPTY() (*PTY, error) {
 	master, err := os.OpenFile("/dev/ptmx", os.O_RDWR, 0)
 	if err != nil {
@@ -207,6 +135,24 @@ func OpenPTY() (*PTY, error) {
 		return nil, err
 	}
 	return pty, nil
+}
+
+// return the PTY number
+func (p *PTY) PTSNumber() (uint, error) {
+	var ptyno uint
+	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, p.Master.Fd(), uintptr(TIOCGPTN), uintptr(unsafe.Pointer(&ptyno)))
+	if errno != 0 {
+		return 0, errno
+	}
+	return ptyno, nil
+}
+
+func (p *PTY) PTSName() (string, error) {
+	n, err := p.PTSNumber()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join("/dev/pts/", strconv.Itoa(int(n))), nil
 }
 
 func (p *PTY) Close() error {
