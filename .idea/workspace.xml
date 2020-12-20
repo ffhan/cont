@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="attaching TTY">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="updated README">
+      <change afterPath="$PROJECT_DIR$/assets/cont.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/cont.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -63,8 +66,8 @@
       <recent name="$PROJECT_DIR$/multiplex" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/daemon" />
       <recent name="$PROJECT_DIR$/assets" />
+      <recent name="$PROJECT_DIR$/daemon" />
       <recent name="$PROJECT_DIR$/cmd/multiplex" />
       <recent name="$PROJECT_DIR$/cmd/socket_test/server" />
       <recent name="$PROJECT_DIR$/cmd/cli" />
@@ -154,7 +157,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="multiplex package basic implementation" />
     <MESSAGE value="cmd multiplex" />
     <MESSAGE value="remote run" />
     <MESSAGE value="remote run WIP" />
@@ -179,7 +181,8 @@
     <MESSAGE value="basic container TTY" />
     <MESSAGE value="improved TTY behaviour, CLI TTY" />
     <MESSAGE value="attaching TTY" />
-    <option name="LAST_COMMIT_MESSAGE" value="attaching TTY" />
+    <MESSAGE value="updated README" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated README" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

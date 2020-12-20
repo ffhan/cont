@@ -32,6 +32,8 @@ Daemon: `go run cmd/daemon/daemon.go`
     * communicates with clients and runs the containers
     * TCP connections are multiplexed in multiple streams and stream container stdin, stdout & stderrs
 
+![cont architecture](assets/cont.png)
+
 ## TODO
 
 * [x] remote container orchestration (IPC through TCP sockets)
