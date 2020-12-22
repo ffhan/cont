@@ -79,3 +79,14 @@ $ go run cmd/cli/cli.go ps
 | 250c137e-a173-410e-8b81-1161e4979d04 | bash | 512306 |         |
 | fc7467b9-d63d-4c05-b6fb-5a61458903ea | bash | 512088 | test123 |
 ```
+
+## Acknowledgments
+
+* https://github.com/google/goterm - I used a good portion of the code to get a grasp of how to set up a Linux PTY
+* https://github.com/nsf/termbox-go - I used this as a reference for raw stdin reads
+* https://github.com/lizrice/containers-from-scratch - a great starting point for isolation
+* https://speakerdeck.com/lizrice/rootless-containers-from-scratch - rootless container runtime
+* https://github.com/hashicorp/yamux - inspiration for a lot of multiplexing ideas
+* https://github.com/spf13/cobra - used for building conts CLIs
+* https://github.com/olekukonko/tablewriter - terminal table print outs
+* gRPC & protobuf - for client-server communication, binary encoding/decoding of messages

@@ -4,18 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="architecture update">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="fixed interactive communication, automatic stream closing on client exit or container exit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/cont-remote.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/assets/cont-remote.mp4" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/container/container.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/container.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daemon/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/run.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daemon/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daemon/streaming.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/streaming.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tty/start.go" beforeDir="false" afterPath="$PROJECT_DIR$/tty/start.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tty/tty.go" beforeDir="false" afterPath="$PROJECT_DIR$/tty/tty.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -164,7 +155,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="remote run" />
     <MESSAGE value="remote run WIP" />
     <MESSAGE value="remote stdin, stdout, stderr" />
     <MESSAGE value="cleanup, attach cmd" />
@@ -189,7 +179,8 @@
     <MESSAGE value="attaching TTY" />
     <MESSAGE value="updated README" />
     <MESSAGE value="architecture update" />
-    <option name="LAST_COMMIT_MESSAGE" value="architecture update" />
+    <MESSAGE value="fixed interactive communication, automatic stream closing on client exit or container exit" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed interactive communication, automatic stream closing on client exit or container exit" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
