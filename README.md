@@ -43,6 +43,7 @@ Daemon: `go run cmd/daemon/daemon.go`
 
 ## TODO
 
+* [ ] local container access (ironically)
 * [x] remote container orchestration (IPC through TCP sockets)
 * [ ] inter-container networking
 * [ ] running different OSes
@@ -50,14 +51,6 @@ Daemon: `go run cmd/daemon/daemon.go`
 * [ ] contfiles & builds
 * [x] killing containers through CLI (almost!)
 * [ ] secure gRPC communication
-
-## Remote IPC TODO
-
-* [x] signalling container kill (reuse gRPC kill)
-* [x] attach to a container
-* [x] clean up multiplex module
-* [x] clean up daemon & CLI codebase
-* [x] dropped connection/stream detection & cleanup
 
 ## Examples
 

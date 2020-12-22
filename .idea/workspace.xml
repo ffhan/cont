@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="fixed interactive communication, automatic stream closing on client exit or container exit">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="acknowledgements">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
@@ -155,7 +155,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="remote run WIP" />
     <MESSAGE value="remote stdin, stdout, stderr" />
     <MESSAGE value="cleanup, attach cmd" />
     <MESSAGE value="debugging" />
@@ -180,7 +179,8 @@
     <MESSAGE value="updated README" />
     <MESSAGE value="architecture update" />
     <MESSAGE value="fixed interactive communication, automatic stream closing on client exit or container exit" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed interactive communication, automatic stream closing on client exit or container exit" />
+    <MESSAGE value="acknowledgements" />
+    <option name="LAST_COMMIT_MESSAGE" value="acknowledgements" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
