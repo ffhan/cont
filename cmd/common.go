@@ -77,18 +77,24 @@ func setupInteractive(wg *sync.WaitGroup, stdin, stdout io.ReadWriteCloser) {
 	go func() {
 		//go io.Copy(stdin, os.Stdin)
 		//go io.Copy(os.Stdout, stdout)
-		pty, err := tty.AttachPTSToTerminal(os.Stdin, os.Stdout)
+		pty, err := tty.AttachPTSToTerminal(nil, os.Stdout)
 		if err != nil {
 			panic(err)
 		}
 		defer pty.Close()
-		go io.Copy(pty.Slave, stdout)
-		buffer := make([]byte, 1)
+		go func() {
+			defer wg.Done()
+			defer pty.Close()
+			_, _ = io.Copy(pty.Slave, stdout)
+		}()
+		buffer := make([]byte, 256)
 		for {
-			if _, err := pty.Slave.Read(buffer); err != nil {
+			n, err := syscall.Read(syscall.Stdin, buffer)
+			if err != nil {
+				log.Printf("cannot read from it stdin: %v", err)
 				return
 			}
-			if _, err := stdin.Write(buffer); err != nil {
+			if _, err := stdin.Write(buffer[:n]); err != nil {
 				return
 			}
 		}

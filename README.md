@@ -13,13 +13,20 @@ Currently supports:
 
 ## Usage
 
-![cont basic demo](assets/cont.gif)
+![cont basic demo](assets/cont-remote.gif)
 
 Check out help with `go run cmd/cli/cli.go help`.
 
-* `go run cmd/cli/cli.go run --it bash` - run bash in an isolated container with connected stdin
+Examples:
+
+* `go run cmd/cli/cli.go run --it bash` - run bash in an isolated container with a pseudo terminal
+    * `go run cmd/cli/cli.go run --host <hostname> --it bash` - run bash in an isolated container with a pseudo terminal
+      through a multiplexed TCP connection
 * `go run cmd/cli/cli.go attach --it <container_id>` - attach to a running container
+    * `go run cmd/cli/cli.go attach --host <hostname> --it <container_id>` - attacho to a container with a pseudo
+      terminal through a multiplexed TCP connection
 * `go run cmd/cli/cli.go ps` - list running containers
+* `go run cmd/cli/cli.go --host <hostname> ps` - list running containers on a remote host
 
 Daemon: `go run cmd/daemon/daemon.go`
 
@@ -48,7 +55,7 @@ Daemon: `go run cmd/daemon/daemon.go`
 
 * [x] signalling container kill (reuse gRPC kill)
 * [x] attach to a container
-* [ ] clean up multiplex module
+* [x] clean up multiplex module
 * [x] clean up daemon & CLI codebase
 * [x] dropped connection/stream detection & cleanup
 

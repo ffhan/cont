@@ -20,6 +20,7 @@ type Container struct {
 	Stdin          io.ReadCloser
 	Stdout, Stderr io.WriteCloser
 	cancel         context.CancelFunc
+	Streamers      map[uuid.UUID]*streamConn
 }
 
 type server struct {
@@ -34,6 +35,7 @@ type server struct {
 }
 
 type streamConn struct {
+	ContainerID uuid.UUID
 	net.Conn
 	mux *multiplex.Mux
 }

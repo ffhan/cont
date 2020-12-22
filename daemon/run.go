@@ -6,6 +6,7 @@ import (
 	"cont/container"
 	"cont/multiplex"
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"log"
 	"strings"
@@ -74,14 +75,15 @@ func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 	log.Printf("container %s started\n", id.String())
 
 	newContainer := &Container{
-		Cmd:     containerCommand,
-		Name:    request.Name,
-		Id:      id,
-		Command: strings.Join(append([]string{request.Cmd}, request.Args...), " "),
-		Stdin:   stdin,
-		Stdout:  stdout,
-		Stderr:  stderr,
-		cancel:  cancel,
+		Cmd:       containerCommand,
+		Name:      request.Name,
+		Id:        id,
+		Command:   strings.Join(append([]string{request.Cmd}, request.Args...), " "),
+		Stdin:     stdin,
+		Stdout:    stdout,
+		Stderr:    stderr,
+		cancel:    cancel,
+		Streamers: make(map[uuid.UUID]*streamConn),
 	}
 	s.addContainer(newContainer)
 	defer s.removeContainer(id)
@@ -106,6 +108,16 @@ func (s *server) removeContainer(id uuid.UUID) {
 	s.currentlyRunningMutex.Lock()
 	defer s.currentlyRunningMutex.Unlock()
 
+	c, ok := s.currentlyRunning[id]
+	if !ok {
+		return
+	}
+	for streamId, streamer := range c.Streamers {
+		if err := streamer.Close(); err != nil {
+			log.Printf("cannot close streamer %s: %v", streamId.String(), err)
+		}
+	}
+
 	delete(s.currentlyRunning, id)
 }
 
@@ -122,6 +134,16 @@ func (s *server) getContainer(id uuid.UUID) (*Container, bool) {
 
 	c, ok := s.currentlyRunning[id]
 	return c, ok
+}
+
+func (s *server) updateContainer(id uuid.UUID, updateFunc func(c *Container) error) error {
+	c, ok := s.getContainer(id)
+	if !ok {
+		return fmt.Errorf("container %s doesn't exist", id.String())
+	}
+	s.currentlyRunningMutex.Lock()
+	defer s.currentlyRunningMutex.Unlock()
+	return updateFunc(c)
 }
 
 func (s *server) getCurrentlyRunning() []*Container {

@@ -32,12 +32,12 @@ func AttachPTSToTerminal(stdin io.Reader, stdout io.Writer) (*PTY, error) {
 		return nil, fmt.Errorf("cannot set stdin termios: %w", err)
 	}
 	// Set the backup attributes on our PTY slave
-	if err = backupTerm.Set(pty.Slave); err != nil {
-		return nil, fmt.Errorf("cannot set slave termios: %w", err)
-	}
+	//if err = backupTerm.Set(pty.Slave); err != nil {
+	//	return nil, fmt.Errorf("cannot set slave termios: %w", err)
+	//}
 
 	sig := make(chan os.Signal, 2)
-	signal.Notify(sig, syscall.SIGWINCH, syscall.SIGCLD, os.Interrupt)
+	signal.Notify(sig, syscall.SIGWINCH, syscall.SIGCLD)
 
 	go Snoop(pty, stdin, stdout)
 
@@ -92,8 +92,12 @@ func Start(cmd *exec.Cmd, stdin io.Reader, stdout io.Writer) (*PTY, error) {
 }
 
 func Snoop(pty *PTY, stdin io.Reader, stdout io.Writer) {
-	go reader(pty.Master, stdout)
-	go writer(pty.Master, stdin)
+	if stdin != nil {
+		go writer(pty.Master, stdin)
+	}
+	if stdout != nil {
+		go reader(pty.Master, stdout)
+	}
 }
 
 // reader reads from master and writes to file and stdout

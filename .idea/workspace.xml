@@ -4,11 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="updated README">
-      <change afterPath="$PROJECT_DIR$/assets/cont.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/cont.xml" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="architecture update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/cont-remote.mp4" beforeDir="false" afterPath="$PROJECT_DIR$/assets/cont-remote.mp4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/common.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/container/container.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/container.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daemon/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daemon/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daemon/streaming.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/streaming.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiplex/mux.go" beforeDir="false" afterPath="$PROJECT_DIR$/multiplex/mux.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tty/start.go" beforeDir="false" afterPath="$PROJECT_DIR$/tty/start.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tty/tty.go" beforeDir="false" afterPath="$PROJECT_DIR$/tty/tty.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -157,7 +164,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="cmd multiplex" />
     <MESSAGE value="remote run" />
     <MESSAGE value="remote run WIP" />
     <MESSAGE value="remote stdin, stdout, stderr" />
@@ -182,7 +188,8 @@
     <MESSAGE value="improved TTY behaviour, CLI TTY" />
     <MESSAGE value="attaching TTY" />
     <MESSAGE value="updated README" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated README" />
+    <MESSAGE value="architecture update" />
+    <option name="LAST_COMMIT_MESSAGE" value="architecture update" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -202,7 +209,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/multiplex/mux.go</url>
-          <line>92</line>
+          <line>93</line>
           <option name="timeStamp" value="56" />
         </line-breakpoint>
       </breakpoints>

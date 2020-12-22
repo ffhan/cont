@@ -97,7 +97,11 @@ func RunChild() error {
 			return fmt.Errorf("cannot start TTY: %w", err)
 		}
 		defer pty.Close()
-		return cmd.Wait()
+		err = cmd.Wait()
+		if err != nil {
+			return fmt.Errorf("wait failed: %w", err)
+		}
+		return nil
 	} else {
 		if err := cmd.Run(); err != nil {
 			return err

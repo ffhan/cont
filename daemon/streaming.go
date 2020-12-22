@@ -35,6 +35,20 @@ func (s *server) acceptStreamConnections(listener net.Listener) {
 			log.Printf("removing mux connection \"%s\"", mux.Name)
 			s.connectionsMutex.Lock()
 			defer s.connectionsMutex.Unlock()
+
+			conn, ok := s.connections[clientID]
+			if !ok {
+				log.Printf("no connection for client ID %s found", clientID.String())
+				return
+			}
+
+			if err := s.updateContainer(conn.ContainerID, func(c *Container) error {
+				delete(c.Streamers, clientID)
+				return nil
+			}); err != nil {
+				log.Printf("cannot remove streamer: %v", err)
+			}
+
 			delete(s.connections, clientID)
 		})
 
@@ -51,9 +65,30 @@ func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
 		}
 		fmt.Println("received a stream request")
 
+		clientID, err := uuid.FromBytes(recv.ClientId)
+		if err != nil {
+			return err
+		}
+
 		containerId, err := uuid.FromBytes(recv.Id)
 		if err != nil {
 			return err
+		}
+
+		if err = s.updateContainer(containerId, func(c *Container) error {
+			s.connectionsMutex.RLock()
+			defer s.connectionsMutex.RUnlock()
+
+			stream, ok := s.connections[clientID]
+			if !ok {
+				return fmt.Errorf("no client with ID %s currently streaming", clientID.String())
+			}
+			stream.ContainerID = containerId
+
+			c.Streamers[clientID] = stream
+			return nil
+		}); err != nil {
+			return fmt.Errorf("cannot update container: %v", err)
 		}
 
 		stdinId, stdoutId, stderrId := s.ContainerStreamIDs(containerId)

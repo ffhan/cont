@@ -44,7 +44,8 @@ func (m *Mux) readIncoming() {
 		data := buffer[:read]
 		if err != nil {
 			if errors.Is(err, io.EOF) {
-				log.Printf("cannot read from output (EOF): %v\n", err)
+				// EOF should be silent
+				//log.Printf("cannot read from output (EOF): %v\n", err)
 				return
 			}
 			log.Printf("cannot read from output: %v\n", err)
@@ -161,7 +162,7 @@ func (m *Mux) removeStream(stream Streamer) {
 
 // Closes a Stream and removes it from the Client and the Mux.
 func (m *Mux) closeStream(s Streamer) error {
-	log.Printf("closed stream %s", s)
+	//log.Printf("closed stream %s", s)
 	m.removeStream(s)
 	m.client.removeStream(s.ID(), s)
 	return s.Close()
