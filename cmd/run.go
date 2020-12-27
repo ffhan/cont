@@ -3,6 +3,7 @@ package cmd
 import (
 	"cont/api"
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	"io"
@@ -44,8 +45,25 @@ var runCmd = &cobra.Command{
 		name, err := cmd.Flags().GetString("name")
 		must(err)
 
+		shareNSID, err := cmd.Flags().GetString("share-ns")
+		must(err)
+
+		var shareNS bool
+		var shareID []byte
+		if shareNSID != "" {
+			shareUUID, err := uuid.Parse(shareNSID)
+			if err != nil {
+				panic(fmt.Errorf("cannot parse share ID: %w", err))
+			}
+			shareNS = true
+			shareID, err = shareUUID.MarshalBinary()
+			if err != nil {
+				panic(fmt.Errorf("cannot marshal share UUID to binary: %w", err))
+			}
+		}
+
 		client := api.NewApiClient(conn)
-		response, err := client.Run(context.Background(), &api.ContainerRequest{
+		cReq := &api.ContainerRequest{
 			Name:     name,
 			Hostname: hostname,
 			Workdir:  workdir,
@@ -53,8 +71,14 @@ var runCmd = &cobra.Command{
 			Args:     args[1:],
 			Opts: &api.ContainerOpts{
 				Interactive: isInteractive,
+				ShareOpts: &api.ShareNSOpts{
+					Share:   shareNS,
+					ShareID: shareID,
+				},
 			},
-		})
+		}
+		//log.Printf("container request: %+v", cReq)
+		response, err := client.Run(context.Background(), cReq)
 		must(err)
 
 		signals := make(chan os.Signal, 1)
@@ -119,6 +143,7 @@ func init() {
 
 	runCmd.Flags().Bool("it", false, "determines whether to connect stdin with container stdin")
 	runCmd.Flags().BoolP("detached", "d", false, "run in detached mode")
+	runCmd.Flags().String("share-ns", "", "selects which container to share namespaces with. The containers have to be co-located (on the same host). Will not try to share mount NS.")
 	runCmd.Flags().String("hostname", hostname, "sets container hostname")
 	runCmd.Flags().String("workdir", homeDir, "sets container workdir")
 	runCmd.Flags().String("name", "", "sets container name")

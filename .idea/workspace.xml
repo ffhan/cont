@@ -4,9 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="acknowledgements">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="README update">
+      <change afterPath="$PROJECT_DIR$/container/logging.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/container/run.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/container/run_child.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/container/setup.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nsenter/nsenter.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nsenter/nsenter.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/share_ns.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api.proto" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/container/container.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/container.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daemon/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daemon/streaming.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/streaming.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +43,14 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
@@ -53,11 +75,11 @@
   </component>
   <component name="RecentsManager">
     <key name="GoMoveDeclarationDialog.RECENT_KEY">
+      <recent name="$PROJECT_DIR$/container" />
       <recent name="$PROJECT_DIR$/tty" />
       <recent name="$PROJECT_DIR$/cmd/daemon" />
       <recent name="$PROJECT_DIR$/cmd" />
       <recent name="$PROJECT_DIR$/multiplex" />
-      <recent name="$PROJECT_DIR$/cmd/socket_test" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -78,15 +100,6 @@
       <kind value="PACKAGE" />
       <filePath value="$PROJECT_DIR$/cmd/daemon/daemon.go" />
       <package value="cont/cmd/daemon" />
-      <directory value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
-    <configuration name="go build cont/cmd/multiplex" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="cont" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="PACKAGE" />
-      <filePath value="$PROJECT_DIR$/cmd/multiplex/main.go" />
-      <package value="cont/cmd/multiplex" />
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
@@ -123,7 +136,6 @@
     </configuration>
     <list>
       <item itemvalue="Go Build.go build cont/cmd/daemon" />
-      <item itemvalue="Go Build.go build cont/cmd/multiplex" />
       <item itemvalue="Go Build.go build cont/cmd/tty" />
       <item itemvalue="Go Test.TestDynamicPipe_Read_SmallBuffer in cont/cmd/daemon" />
       <item itemvalue="Go Test.TestDynamicPipe_Write in cont/cmd/daemon" />
@@ -134,7 +146,6 @@
         <item itemvalue="Go Build.go build cont/cmd/tty" />
         <item itemvalue="Go Test.TestDynamicPipe_Read_SmallBuffer in cont/cmd/daemon" />
         <item itemvalue="Go Test.TestDynamicPipe_Write in cont/cmd/daemon" />
-        <item itemvalue="Go Build.go build cont/cmd/multiplex" />
       </list>
     </recent_temporary>
   </component>
@@ -190,7 +201,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/container/container.go</url>
-          <line>19</line>
+          <line>21</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
@@ -202,6 +213,11 @@
           <url>file://$PROJECT_DIR$/multiplex/mux.go</url>
           <line>93</line>
           <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/cmd/lowlvl/main.go</url>
+          <line>33</line>
+          <option name="timeStamp" value="57" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

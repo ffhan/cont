@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	if os.Getpid() == 1 {
+	if len(os.Args) >= 2 && os.Args[1] == "init" {
 		must(container.RunChild())
 		return
 	}

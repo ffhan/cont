@@ -63,7 +63,7 @@ func (s *server) RequestStream(streamServer api.Api_RequestStreamServer) error {
 		if err != nil {
 			return err
 		}
-		fmt.Println("received a stream request")
+		log.Println("received a stream request")
 
 		clientID, err := uuid.FromBytes(recv.ClientId)
 		if err != nil {

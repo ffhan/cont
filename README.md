@@ -51,6 +51,11 @@ Daemon: `go run cmd/daemon/daemon.go`
 * [ ] contfiles & builds
 * [x] killing containers through CLI (almost!)
 * [ ] secure gRPC communication
+* [ ] separate -i and -t options (attach STDIN and PTY)
+* [ ] tee stdout & stderr to logfiles (rotated daily or every 10MB)
+* [ ] attaching container namespaces on the same host
+* [ ] init pipe instead of env vars
+* [ ] clone binary
 
 ## Examples
 

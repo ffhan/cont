@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"log"
+	"path/filepath"
 	"strings"
 )
 
@@ -50,15 +51,26 @@ func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	shareConfig, err := s.setupShareConfig(request)
+	if err != nil {
+		log.Printf("cannot setup share config: %v", err)
+		s.sendFailedEvent(eventChan, id, err)
+		return
+	}
+
 	containerCommand, err := container.Start(ctx, &container.Config{
-		Stdin:       stdin,
-		Stdout:      stdout,
-		Stderr:      stderr,
-		Hostname:    request.Hostname,
-		Workdir:     request.Workdir,
-		Cmd:         request.Cmd,
-		Args:        request.Args,
-		Interactive: request.Opts.Interactive,
+		Stdin:                 stdin,
+		Stdout:                stdout,
+		Stderr:                stderr,
+		Hostname:              request.Hostname,
+		Workdir:               request.Workdir,
+		Cmd:                   request.Cmd,
+		Args:                  request.Args,
+		Interactive:           request.Opts.Interactive,
+		SharedNamespaceConfig: shareConfig,
+		Logging: container.LoggingConfig{
+			Path: filepath.Join("./logs", id.String()), // todo: use /var/log/cont/<container_id> for logs
+		},
 	})
 	if err != nil {
 		log.Printf("container start error: %v\n", err)
@@ -102,6 +114,28 @@ func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 		Data:    nil,
 	})
 	log.Printf("container %s done\n", id.String())
+}
+
+func (s *server) setupShareConfig(request *api.ContainerRequest) (container.SharedNamespaceConfig, error) {
+	var result container.SharedNamespaceConfig
+	doShare := request.Opts.ShareOpts.Share
+	if !doShare {
+		return result, nil
+	}
+	result.Share = true
+
+	containerID, err := uuid.FromBytes(request.Opts.ShareOpts.ShareID)
+	if err != nil {
+		return result, err
+	}
+
+	c, ok := s.getContainer(containerID)
+	if !ok {
+		return result, fmt.Errorf("container %s is not currently running", containerID.String())
+	}
+
+	result.PID = c.Cmd.Process.Pid
+	return result, nil
 }
 
 func (s *server) removeContainer(id uuid.UUID) {

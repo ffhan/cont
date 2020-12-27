@@ -20,8 +20,14 @@ message StreamResponse {
   string errId = 3; // stream stderr ID
 }
 
+message ShareNSOpts {
+  bool share = 1;
+  bytes shareID = 2;
+}
+
 message ContainerOpts {
   bool interactive = 1;
+  ShareNSOpts shareOpts = 2;
 }
 
 message ContainerRequest {
