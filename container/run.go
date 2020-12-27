@@ -42,18 +42,16 @@ func Start(ctx context.Context, config *Config) (*exec.Cmd, error) {
 		go io.Copy(stdout, pty.Master) // write output to previously set up logging
 	}
 
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: syscall.CLONE_NEWUSER | syscall.CLONE_NEWNS,
-		UidMappings: []syscall.SysProcIDMap{
-			{ContainerID: 0, HostID: os.Getuid(), Size: 1},
-		},
-		GidMappings: []syscall.SysProcIDMap{
-			{ContainerID: 0, HostID: os.Getgid(), Size: 1},
-		},
+	cmd.SysProcAttr = &syscall.SysProcAttr{}
+	cmd.SysProcAttr.Cloneflags |= syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWNET | syscall.CLONE_NEWUSER | syscall.CLONE_NEWIPC | unix.CLONE_NEWCGROUP
+	cmd.SysProcAttr.UidMappings = []syscall.SysProcIDMap{
+		{ContainerID: 0, HostID: os.Getuid(), Size: 1},
+	}
+	cmd.SysProcAttr.GidMappings = []syscall.SysProcIDMap{
+		{ContainerID: 0, HostID: os.Getgid(), Size: 1},
 	}
 
 	if config.SharedNamespaceConfig.Flags == 0 { // we're not sharing anything
-		cmd.SysProcAttr.Cloneflags |= syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWNET | syscall.CLONE_NEWUSER | syscall.CLONE_NEWIPC | unix.CLONE_NEWCGROUP
 	} else {
 		if err := setupSharedNSes(cmd, config); err != nil {
 			return nil, err
@@ -61,25 +59,6 @@ func Start(ctx context.Context, config *Config) (*exec.Cmd, error) {
 	}
 
 	return cmd, cmd.Start()
-}
-
-func setupSharedNSes(cmd *exec.Cmd, config *Config) error {
-	nses, err := getNses(config.SharedNamespaceConfig)
-	if err != nil {
-		return err
-	}
-	nsStartFd := 3 + len(cmd.ExtraFiles)
-	nsEndFd := nsStartFd + len(nses)
-
-	cmd.Env = append(cmd.Env,
-		fmt.Sprintf(nsStartEnv+"=%d", nsStartFd),
-		fmt.Sprintf(nsEndEnv+"=%d", nsEndFd),
-	)
-	if cmd.ExtraFiles == nil {
-		cmd.ExtraFiles = make([]*os.File, 0, len(nses))
-	}
-	cmd.ExtraFiles = append(cmd.ExtraFiles, nses...)
-	return nil
 }
 
 func Run(ctx context.Context, config *Config) (*exec.Cmd, error) {

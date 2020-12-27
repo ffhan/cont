@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
-	"golang.org/x/sys/unix"
 	"io"
 	"os"
 	"os/signal"
@@ -60,7 +59,7 @@ var runCmd = &cobra.Command{
 			if err != nil {
 				panic(fmt.Errorf("cannot marshal share UUID to binary: %w", err))
 			}
-			shareNS = syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWNET | syscall.CLONE_NEWUSER | syscall.CLONE_NEWIPC | unix.CLONE_NEWCGROUP
+			shareNS = syscall.CLONE_NEWNET | syscall.CLONE_NEWIPC
 		}
 
 		client := api.NewApiClient(conn)

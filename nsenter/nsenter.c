@@ -4,6 +4,8 @@
 #include <sched.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/capability.h>
+#include <unistd.h>
 
 static int initPipe(void) {
     int pipenum;
@@ -60,8 +62,28 @@ static int joinNamespaces(int startNSFD, int endNSFD) {
     }
 }
 
+static void setupCaps(void) {
+    cap_t caps = cap_get_proc();
+
+    cap_value_t capflag = CAP_SYS_ADMIN;
+
+    if (cap_set_flag(caps, CAP_EFFECTIVE, 1, &capflag, CAP_SET) != 0) {
+        printf("failed cap_set_flag!\n");
+        fflush(stdout);
+        exit(1);
+    }
+
+    if (cap_set_proc(caps) != 0) {
+        printf("failed cap_set_proc!\n");
+        fflush(stdout);
+        exit(1);
+    }
+    printf("successfully set CAP_SYS_ADMIN\n");
+}
+
 void nsexec(void) {
-    printf("Hello world from nsenter!\n");
+    printf("Hello world from nsenter (EUID: %d)!\n", geteuid());
+
     int pipenum;
     int startNS, endNS;
 
@@ -74,6 +96,8 @@ void nsexec(void) {
 
     if (startNS != -1 && endNS != -1) {
         printf("sharing NSes from fd %d to %d\n", startNS, endNS);
+    } else {
+        setupCaps();
     }
 
     joinNamespaces(startNS, endNS);

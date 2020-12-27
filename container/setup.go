@@ -90,6 +90,7 @@ func getNses(config SharedNamespaceConfig) ([]*os.File, error) {
 		if !isNSSelected(f.Name(), config.Flags) {
 			continue // NS not selected
 		}
+		log.Printf("will try to share %s namespace", f.Name())
 		ns, err := os.Open(filepath.Join(nsPath, f.Name()))
 		if err != nil {
 			for _, n := range nses {
@@ -110,18 +111,22 @@ func getNses(config SharedNamespaceConfig) ([]*os.File, error) {
 	return nses, nil
 }
 
-// call *only* at process startup - extremely bad design
-func attachToNSes() {
-	for fd := 3; ; fd++ {
-		_, _, errno := syscall.Syscall(syscall.SYS_FCNTL, uintptr(fd), syscall.F_GETFD, 0)
-		if errno != 0 {
-			return
-		}
-		err := unix.Setns(fd, 0)
-		if err != nil {
-			log.Printf("cannot set ns %d: %v", fd, err)
-			return
-		}
-		log.Printf("set ns %d", fd)
+func setupSharedNSes(cmd *exec.Cmd, config *Config) error {
+	cmd.SysProcAttr.Cloneflags ^= uintptr(config.SharedNamespaceConfig.Flags) // unset cloning NS-es we share
+	nses, err := getNses(config.SharedNamespaceConfig)
+	if err != nil {
+		return err
 	}
+	nsStartFd := 3 + len(cmd.ExtraFiles)
+	nsEndFd := nsStartFd + len(nses)
+
+	cmd.Env = append(cmd.Env,
+		fmt.Sprintf(nsStartEnv+"=%d", nsStartFd),
+		fmt.Sprintf(nsEndEnv+"=%d", nsEndFd),
+	)
+	if cmd.ExtraFiles == nil {
+		cmd.ExtraFiles = make([]*os.File, 0, len(nses))
+	}
+	cmd.ExtraFiles = append(cmd.ExtraFiles, nses...)
+	return nil
 }
