@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
+	"golang.org/x/sys/unix"
 	"io"
 	"os"
 	"os/signal"
@@ -48,18 +49,18 @@ var runCmd = &cobra.Command{
 		shareNSID, err := cmd.Flags().GetString("share-ns")
 		must(err)
 
-		var shareNS bool
+		var shareNS int
 		var shareID []byte
 		if shareNSID != "" {
 			shareUUID, err := uuid.Parse(shareNSID)
 			if err != nil {
 				panic(fmt.Errorf("cannot parse share ID: %w", err))
 			}
-			shareNS = true
 			shareID, err = shareUUID.MarshalBinary()
 			if err != nil {
 				panic(fmt.Errorf("cannot marshal share UUID to binary: %w", err))
 			}
+			shareNS = syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWNET | syscall.CLONE_NEWUSER | syscall.CLONE_NEWIPC | unix.CLONE_NEWCGROUP
 		}
 
 		client := api.NewApiClient(conn)
@@ -72,7 +73,7 @@ var runCmd = &cobra.Command{
 			Opts: &api.ContainerOpts{
 				Interactive: isInteractive,
 				ShareOpts: &api.ShareNSOpts{
-					Share:   shareNS,
+					Flags:   int64(shareNS),
 					ShareID: shareID,
 				},
 			},

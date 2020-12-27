@@ -4,23 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="README update">
-      <change afterPath="$PROJECT_DIR$/container/logging.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/container/run.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/container/run_child.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/container/setup.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nsenter/nsenter.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nsenter/nsenter.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/share_ns.sh" afterDir="false" />
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="initpipes, basic nsenter skeleton, share NS beginnings, primitive container logging">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/api.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.pb.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/api.proto" beforeDir="false" afterPath="$PROJECT_DIR$/api/api.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/daemon/daemon.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/daemon/daemon.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/run.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/container/container.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/container.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/container/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/container/run_child.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/run_child.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/container/setup.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/setup.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daemon/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/run.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daemon/streaming.go" beforeDir="false" afterPath="$PROJECT_DIR$/daemon/streaming.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nsenter/nsenter.c" beforeDir="false" afterPath="$PROJECT_DIR$/nsenter/nsenter.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -166,7 +160,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="remote stdin, stdout, stderr" />
     <MESSAGE value="cleanup, attach cmd" />
     <MESSAGE value="debugging" />
     <MESSAGE value="working interactive output for attach" />
@@ -191,7 +184,8 @@
     <MESSAGE value="architecture update" />
     <MESSAGE value="fixed interactive communication, automatic stream closing on client exit or container exit" />
     <MESSAGE value="acknowledgements" />
-    <option name="LAST_COMMIT_MESSAGE" value="acknowledgements" />
+    <MESSAGE value="initpipes, basic nsenter skeleton, share NS beginnings, primitive container logging" />
+    <option name="LAST_COMMIT_MESSAGE" value="initpipes, basic nsenter skeleton, share NS beginnings, primitive container logging" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -201,7 +195,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/container/container.go</url>
-          <line>21</line>
+          <line>23</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">

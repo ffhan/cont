@@ -2,6 +2,7 @@ package container
 
 import (
 	"encoding/gob"
+	"errors"
 	"fmt"
 	"golang.org/x/sys/unix"
 	"io/ioutil"
@@ -53,17 +54,41 @@ func getEnv() (result initPipeConfig, err error) {
 	return result, nil
 }
 
-func getNses(pid int) ([]*os.File, error) {
+func isNSSelected(ns string, flags int) bool {
+	switch ns {
+	case "cgroup":
+		return flags&unix.CLONE_NEWCGROUP != 0
+	case "ipc":
+		return flags&syscall.CLONE_NEWIPC != 0
+	case "mnt":
+		return flags&syscall.CLONE_NEWNS != 0
+	case "net":
+		return flags&syscall.CLONE_NEWNET != 0
+	case "pid":
+		return flags&syscall.CLONE_NEWPID != 0
+	case "pid_for_children":
+		log.Println("pid_for_children not implemented")
+		return false
+	case "user":
+		return flags&syscall.CLONE_NEWUSER != 0
+	case "uts":
+		return flags&syscall.CLONE_NEWUTS != 0
+	default:
+		panic(errors.New("invalid ns " + ns))
+	}
+}
+
+func getNses(config SharedNamespaceConfig) ([]*os.File, error) {
 	nses := make([]*os.File, 0, 4)
 
-	nsPath := fmt.Sprintf("/proc/%d/ns", pid)
+	nsPath := fmt.Sprintf("/proc/%d/ns", config.PID)
 	dir, err := ioutil.ReadDir(nsPath)
 	if err != nil {
 		return nil, fmt.Errorf("cannot read ns-es: %w", err)
 	}
 	for _, f := range dir {
-		if f.Name() != "net" { // don't try to share mounts
-			continue
+		if !isNSSelected(f.Name(), config.Flags) {
+			continue // NS not selected
 		}
 		ns, err := os.Open(filepath.Join(nsPath, f.Name()))
 		if err != nil {
@@ -73,6 +98,14 @@ func getNses(pid int) ([]*os.File, error) {
 			return nil, fmt.Errorf("cannot open ns: %w", err)
 		}
 		nses = append(nses, ns)
+	}
+	for i, ns := range nses {
+		if ns.Name() == "user" { // make sure user NS is the first available NS in the list (if user is shared)
+			tmp := nses[0]
+			nses[0] = nses[i]
+			nses[i] = tmp
+			break
+		}
 	}
 	return nses, nil
 }

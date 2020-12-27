@@ -21,7 +21,7 @@ message StreamResponse {
 }
 
 message ShareNSOpts {
-  bool share = 1;
+  int64 flags = 1;
   bytes shareID = 2;
 }
 

@@ -6,11 +6,13 @@ import (
 )
 
 const (
-	initPipeEnv = "_LIBCONTAINER_INITPIPE"
+	initPipeEnv = "_LIBCONTAINER_INITPIPE" // init pipe fd
+	nsStartEnv  = "_NS_START"              // first NS fd
+	nsEndEnv    = "_NS_END"                // last NS fd
 )
 
 type SharedNamespaceConfig struct {
-	Share bool
+	Flags int
 	PID   int
 }
 

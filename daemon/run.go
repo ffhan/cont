@@ -118,11 +118,11 @@ func (s *server) runContainer(request *api.ContainerRequest, id uuid.UUID) {
 
 func (s *server) setupShareConfig(request *api.ContainerRequest) (container.SharedNamespaceConfig, error) {
 	var result container.SharedNamespaceConfig
-	doShare := request.Opts.ShareOpts.Share
+	doShare := request.Opts.ShareOpts.Flags != 0
 	if !doShare {
 		return result, nil
 	}
-	result.Share = true
+	result.Flags = int(request.Opts.ShareOpts.Flags) // might have problems with truncating
 
 	containerID, err := uuid.FromBytes(request.Opts.ShareOpts.ShareID)
 	if err != nil {

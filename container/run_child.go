@@ -30,9 +30,9 @@ func RunChild() error {
 		return fmt.Errorf("cannot get environment from init pipe: %w", err)
 	}
 
-	if env.SharedNamespaceConfig.Share {
-		attachToNSes()
-	}
+	//if env.SharedNamespaceConfig.Share {
+	//	attachToNSes()
+	//}
 
 	if err := syscall.Sethostname([]byte(env.Hostname)); err != nil {
 		return fmt.Errorf("cannot set hostname \"%s\": %w", env.Hostname, err)
