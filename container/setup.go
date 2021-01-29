@@ -71,10 +71,11 @@ func isNSSelected(ns string, flags int) bool {
 		return false
 	case "user":
 		return flags&syscall.CLONE_NEWUSER != 0
-	case "uts":
+	case "uts", "time":
 		return flags&syscall.CLONE_NEWUTS != 0
 	default:
-		panic(errors.New("invalid ns " + ns))
+		log.Println(errors.New("invalid ns " + ns))
+		return false
 	}
 }
 
@@ -124,6 +125,7 @@ func setupSharedNSes(cmd *exec.Cmd, config *Config) error {
 		fmt.Sprintf(nsStartEnv+"=%d", nsStartFd),
 		fmt.Sprintf(nsEndEnv+"=%d", nsEndFd),
 	)
+	log.Printf("start %d end %d\n", nsStartFd, nsEndFd)
 	if cmd.ExtraFiles == nil {
 		cmd.ExtraFiles = make([]*os.File, 0, len(nses))
 	}

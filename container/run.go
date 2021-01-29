@@ -43,15 +43,15 @@ func Start(ctx context.Context, config *Config) (*exec.Cmd, error) {
 	}
 
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
-	cmd.SysProcAttr.Cloneflags |= syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWNET | syscall.CLONE_NEWUSER | syscall.CLONE_NEWIPC | unix.CLONE_NEWCGROUP
-	cmd.SysProcAttr.UidMappings = []syscall.SysProcIDMap{
-		{ContainerID: 0, HostID: os.Getuid(), Size: 1},
-	}
-	cmd.SysProcAttr.GidMappings = []syscall.SysProcIDMap{
-		{ContainerID: 0, HostID: os.Getgid(), Size: 1},
-	}
 
 	if config.SharedNamespaceConfig.Flags == 0 { // we're not sharing anything
+		cmd.SysProcAttr.Cloneflags |= syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS | syscall.CLONE_NEWNET | syscall.CLONE_NEWUSER | syscall.CLONE_NEWIPC | unix.CLONE_NEWCGROUP
+		cmd.SysProcAttr.UidMappings = []syscall.SysProcIDMap{
+			{ContainerID: 0, HostID: os.Getuid(), Size: 1},
+		}
+		cmd.SysProcAttr.GidMappings = []syscall.SysProcIDMap{
+			{ContainerID: 0, HostID: os.Getgid(), Size: 1},
+		}
 	} else {
 		if err := setupSharedNSes(cmd, config); err != nil {
 			return nil, err

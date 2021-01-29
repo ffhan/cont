@@ -4,13 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="setns syscalls in CGO (currently not permitted)">
+    <list default="true" id="b51393ea-4823-42cb-a1eb-40d86b5f7e80" name="Default Changelist" comment="caps, basic NS sharing (not working)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/run.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/container/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/run.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/container/setup.go" beforeDir="false" afterPath="$PROJECT_DIR$/container/setup.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nsenter/nsenter.c" beforeDir="false" afterPath="$PROJECT_DIR$/nsenter/nsenter.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nsenter/nsenter.go" beforeDir="false" afterPath="$PROJECT_DIR$/nsenter/nsenter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_container.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run_container.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,8 +23,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Go Application" />
         <option value="Go File" />
+        <option value="Go Application" />
       </list>
     </option>
   </component>
@@ -53,15 +56,17 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="DefaultGoTemplateProperty" value="Go Application" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="configurable..is.expanded" value="false" />
+    <property name="configurable.GoLibrariesConfigurable.is.expanded" value="true" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="go.sdk" />
   </component>
   <component name="RecentsManager">
     <key name="GoMoveDeclarationDialog.RECENT_KEY">
@@ -83,10 +88,11 @@
       <recent name="$PROJECT_DIR$/cmd/cli" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Build.go build cont/cmd/daemon">
+  <component name="RunManager" selected="Go Build.go build cont/cmd/tty">
     <configuration name="go build cont/cmd/daemon" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="cont" />
       <working_directory value="$PROJECT_DIR$" />
+      <sudo value="true" />
       <kind value="PACKAGE" />
       <filePath value="$PROJECT_DIR$/cmd/daemon/daemon.go" />
       <package value="cont/cmd/daemon" />
@@ -132,10 +138,10 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Build.go build cont/cmd/daemon" />
-        <item itemvalue="Go Build.go build cont/cmd/tty" />
-        <item itemvalue="Go Test.TestDynamicPipe_Read_SmallBuffer in cont/cmd/daemon" />
         <item itemvalue="Go Test.TestDynamicPipe_Write in cont/cmd/daemon" />
+        <item itemvalue="Go Test.TestDynamicPipe_Read_SmallBuffer in cont/cmd/daemon" />
+        <item itemvalue="Go Build.go build cont/cmd/tty" />
+        <item itemvalue="Go Build.go build cont/cmd/daemon" />
       </list>
     </recent_temporary>
   </component>
@@ -156,7 +162,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="debugging" />
     <MESSAGE value="working interactive output for attach" />
     <MESSAGE value="getting rid of dynamic pipes" />
     <MESSAGE value="multiplex receiver" />
@@ -181,7 +186,8 @@
     <MESSAGE value="acknowledgements" />
     <MESSAGE value="initpipes, basic nsenter skeleton, share NS beginnings, primitive container logging" />
     <MESSAGE value="setns syscalls in CGO (currently not permitted)" />
-    <option name="LAST_COMMIT_MESSAGE" value="setns syscalls in CGO (currently not permitted)" />
+    <MESSAGE value="caps, basic NS sharing (not working)" />
+    <option name="LAST_COMMIT_MESSAGE" value="caps, basic NS sharing (not working)" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

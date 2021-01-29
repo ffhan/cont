@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/capability.h>
+#include <sys/prctl.h>
 #include <unistd.h>
 
 static int initPipe(void) {
@@ -62,27 +63,22 @@ static int joinNamespaces(int startNSFD, int endNSFD) {
     }
 }
 
-static void setupCaps(void) {
-    cap_t caps = cap_get_proc();
-
-    cap_value_t capflag = CAP_SYS_ADMIN;
-
-    if (cap_set_flag(caps, CAP_EFFECTIVE, 1, &capflag, CAP_SET) != 0) {
-        printf("failed cap_set_flag!\n");
-        fflush(stdout);
-        exit(1);
-    }
-
-    if (cap_set_proc(caps) != 0) {
-        printf("failed cap_set_proc!\n");
-        fflush(stdout);
-        exit(1);
-    }
-    printf("successfully set CAP_SYS_ADMIN\n");
-}
-
 void nsexec(void) {
+    cap_t caps;
+
     printf("Hello world from nsenter (EUID: %d)!\n", geteuid());
+
+    caps = cap_get_proc();
+    if (caps == -1) {
+        printf("cannot get caps: %s\n", strerror(errno));
+    } else {
+        printf("caps: %#0X\n", caps);
+    }
+
+    if (prctl(PR_SET_DUMPABLE, 1, 0, 0, 0) == -1) {
+        printf("cannot set dumpable\n");
+        exit(1);
+    }
 
     int pipenum;
     int startNS, endNS;
@@ -96,8 +92,6 @@ void nsexec(void) {
 
     if (startNS != -1 && endNS != -1) {
         printf("sharing NSes from fd %d to %d\n", startNS, endNS);
-    } else {
-        setupCaps();
     }
 
     joinNamespaces(startNS, endNS);

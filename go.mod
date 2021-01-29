@@ -3,6 +3,7 @@ module cont
 go 1.15
 
 require (
+	github.com/ffhan/igotify v0.3.0 // indirect
 	github.com/golang/protobuf v1.4.2
 	github.com/google/uuid v1.1.2
 	github.com/olekukonko/tablewriter v0.0.4

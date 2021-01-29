@@ -42,6 +42,14 @@ github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.m
 github.com/envoyproxy/go-control-plane v0.9.7/go.mod h1:cwu0lG7PUMfa9snN8LXBig5ynNVH9qI8YYLbd1fK2po=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
+github.com/ffhan/igotify v0.0.0-20201230153527-ad28e354f3db h1:TXDHtkr2JIpNv5s1j+6NkakNcO4HKspVdEOQ+WL2w4o=
+github.com/ffhan/igotify v0.0.0-20201230153527-ad28e354f3db/go.mod h1:hdXB3sjFdaTGxhY5qeIXkB3xbT8E3taq2kWDJgXzrBg=
+github.com/ffhan/igotify v0.1.0 h1:gfy7+QmAA+rRftHV418I1ImTx0wK7TjdmFplkxRSJxs=
+github.com/ffhan/igotify v0.1.0/go.mod h1:hdXB3sjFdaTGxhY5qeIXkB3xbT8E3taq2kWDJgXzrBg=
+github.com/ffhan/igotify v0.2.0 h1:xaw3UCOcFp1vx4aKNdqeCy5SysvQ6WVTLCSPb6Rezhc=
+github.com/ffhan/igotify v0.2.0/go.mod h1:hdXB3sjFdaTGxhY5qeIXkB3xbT8E3taq2kWDJgXzrBg=
+github.com/ffhan/igotify v0.3.0 h1:/pza0tUOXRxyJJISimQhb7GFTdyL6qatWq0ODnEb4zY=
+github.com/ffhan/igotify v0.3.0/go.mod h1:hdXB3sjFdaTGxhY5qeIXkB3xbT8E3taq2kWDJgXzrBg=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=

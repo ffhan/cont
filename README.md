@@ -27,6 +27,10 @@ Examples:
       terminal through a multiplexed TCP connection
 * `go run cmd/cli/cli.go ps` - list running containers
 * `go run cmd/cli/cli.go --host <hostname> ps` - list running containers on a remote host
+* `go run ./cmd/cli/cli.go run --host <hostname> --share-ns "$container_id" --it --name shared bash`
+    * share namespaces with an existing container `container_id`
+    * requires `daemon` to be run as root (because of `setns`)
+    * `ip link add dummy0 type dummy` - dummy interface will be shown in both processes (`ip addr`)
 
 Daemon: `go run cmd/daemon/daemon.go`
 
